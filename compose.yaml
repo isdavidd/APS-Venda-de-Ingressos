@@ -1,0 +1,62 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: event_management
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-scripts:/docker-entrypoint-initdb.d # Scripts para inicializar o banco
+      - mysql_data:/var/lib/mysql # Persistência de dados
+    networks:
+      - springboot-network
+
+  service-events:
+    build:
+      context: ./services/service-events # Caminho do serviço de eventos
+    container_name: service-events
+    ports:
+      - "8081:8081" # Porta para acessar o serviço
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/event_management
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - springboot-network
+    depends_on:
+      - mysql
+
+  # service-tickets:
+  #   build:
+  #     context: ./services/service-tickets # Caminho do serviço de ingressos
+  #   container_name: service-tickets
+  #   ports:
+  #     - "8082:8082" # Porta para acessar o serviço
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/event_management
+  #     SPRING_DATASOURCE_USERNAME: user
+  #     SPRING_DATASOURCE_PASSWORD: password
+  #   networks:
+  #     - springboot-network
+  #   depends_on:
+  #     - mysql
+
+  # frontend:
+  #   build:
+  #     context: ./frontend # Caminho do projeto frontend
+  #   container_name: frontend
+  #   ports:
+  #     - "3000:3000" # Porta para acessar o frontend
+  #   networks:
+  #     - springboot-network
+
+volumes:
+  mysql_data: # Volume para persistir os dados do banco de dados
+
+networks:
+  springboot-network: # Rede compartilhada para comunicação entre os serviços
