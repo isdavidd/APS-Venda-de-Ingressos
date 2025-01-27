@@ -1,8 +1,10 @@
 package com.aps.grupo4.event_management_service.service;
 
 
+import com.aps.grupo4.event_management_service.config.validations.EventoExistenteExcepetion;
 import com.aps.grupo4.event_management_service.entity.Evento;
 import com.aps.grupo4.event_management_service.repository.EventoRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class EventoService {
         }
     }
 
-    public Evento getEventoById(Long id) {
+    public Evento getEventoById(Integer id) {
         try {
             Optional<Evento> evento = eventoRepository.findById(id);
 
@@ -69,17 +71,17 @@ public class EventoService {
 
     public Evento createEvento(Evento eventoNovo) {
 
-        try {
-            Optional<Evento> eventoJaExistente = eventoRepository.findById(eventoNovo.getId());
 
-            if (eventoJaExistente.isPresent()) {
-                throw new IllegalArgumentException("Evento com o ID " + eventoNovo.getId() + " já existe.");
-            }
+        Optional<Evento> eventoJaExistente = eventoRepository.findByNomeEvento(eventoNovo.getNomeEvento());
 
-            return eventoRepository.save(eventoNovo);
-
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Ocorreu um erro inesperado!");
+        if (eventoJaExistente.isPresent()) {
+            throw new EventoExistenteExcepetion("Já existe um evento com o nome " + eventoNovo.getNomeEvento());
         }
+
+        var evento = eventoRepository.save(eventoNovo);
+
+        return evento;
+
+
     }
 }
