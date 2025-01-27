@@ -15,16 +15,16 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Entity
 public class Evento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "nome", nullable = false)
     @NotNull(message = "O evento precisar ter nome!")
@@ -39,7 +39,7 @@ public class Evento {
     @NotNull(message = "O evento precisa ter local!")
     private String localEvento;
 
-    @Column(name = "valor", nullable = false)
+    @Column(name = "valor_ingresso", nullable = false)
     @NotNull(message = "O valor do ingresso não pode ser nulo!")
     @Positive(message = "O valor do ingresso deve ser maior que 0!")
     private BigDecimal valorIngressoEvento;
