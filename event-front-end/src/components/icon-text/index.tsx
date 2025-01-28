@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-common-types';
 import { FC } from 'react';
-import Link from 'next/link';
 
 interface IconTextProps {
     icon: IconDefinition;
