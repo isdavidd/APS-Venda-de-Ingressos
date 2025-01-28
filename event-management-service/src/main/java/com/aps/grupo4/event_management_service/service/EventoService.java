@@ -1,14 +1,14 @@
 package com.aps.grupo4.event_management_service.service;
 
 
-import com.aps.grupo4.event_management_service.config.validations.EventoExistenteExcepetion;
+import com.aps.grupo4.event_management_service.config.validations.EventoExistenteException;
+import com.aps.grupo4.event_management_service.config.validations.EventoInexistenteException;
 import com.aps.grupo4.event_management_service.entity.Evento;
 import com.aps.grupo4.event_management_service.repository.EventoRepository;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -69,19 +69,34 @@ public class EventoService {
         }
     }
 
+    @Transactional
     public Evento createEvento(Evento eventoNovo) {
-
 
         Optional<Evento> eventoJaExistente = eventoRepository.findByNomeEvento(eventoNovo.getNomeEvento());
 
         if (eventoJaExistente.isPresent()) {
-            throw new EventoExistenteExcepetion("Já existe um evento com o nome " + eventoNovo.getNomeEvento());
+            throw new EventoExistenteException("Já existe um evento com o nome " + eventoNovo.getNomeEvento());
         }
 
         var evento = eventoRepository.save(eventoNovo);
 
         return evento;
 
-
     }
+
+    @Transactional
+    public String deleteEvento(String nomeEvento) {
+
+        Optional<Evento> eventoJaExistente = eventoRepository.findByNomeEvento(nomeEvento);
+
+        if (eventoJaExistente.isPresent()) {
+            eventoRepository.deleteByNomeEvento(nomeEvento);
+
+            return String.format("Evento com o nome %s foi deletado!", nomeEvento);
+        }
+
+        throw new EventoInexistenteException(String.format("Evento com o nome %s não existe!", nomeEvento));
+    }
+
+
 }
