@@ -16,7 +16,7 @@ const NotificationItem = ({ item }: NotificationItemProps) => {
     return (
         <div
             key={item.id}
-            className="border-b shadow-gray-350 flex flex-row items-start gap-4 p-3 justify-between"
+            className="shadow-md flex flex-row items-start gap-4 p-3 justify-between"
         >
             <FontAwesomeIcon icon={faCircleInfo} className="h-6 w-6" />
             <div className="flex flex-col gap-1 w-full">
