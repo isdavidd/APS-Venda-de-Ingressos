@@ -1,20 +1,14 @@
 package com.aps.grupo4.event_management_service.controller;
 
 
-import com.aps.grupo4.event_management_service.config.validations.EventoExistenteExcepetion;
+import com.aps.grupo4.event_management_service.config.validations.EventoExistenteException;
+import com.aps.grupo4.event_management_service.config.validations.EventoInexistenteException;
 import com.aps.grupo4.event_management_service.entity.Evento;
 import com.aps.grupo4.event_management_service.service.EventoService;
-import jakarta.persistence.EntityExistsException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/event-management")
@@ -79,8 +73,23 @@ public class EventManagementController {
 
             return ResponseEntity.ok().body(evento);
 
-        } catch (EventoExistenteExcepetion e) {
+        } catch (EventoExistenteException e) {
             return  ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+
+        } catch (RuntimeException e) {
+            return  ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @DeleteMapping(path = "/delete-event/{nomeEvento}")
+    public ResponseEntity<Object> deleteEvento(@PathVariable("nomeEvento") String nomeEvento) {
+        try {
+            var eventoDeletado = eventoService.deleteEvento(nomeEvento);
+
+            return ResponseHandler.responseBuilder(eventoDeletado, HttpStatus.NO_CONTENT, null);
+
+        } catch (EventoInexistenteException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND, null);
 
         } catch (RuntimeException e) {
             return  ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
