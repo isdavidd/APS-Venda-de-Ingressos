@@ -6,17 +6,15 @@ import Link from 'next/link';
 interface IconTextProps {
     icon: IconDefinition;
     text: string;
-    to?: string;
+    onClick?: () => void;
 }
 
-const IconText: FC<IconTextProps> = ({ icon, text, to = '/' }) => {
+const IconText: FC<IconTextProps> = ({ icon, text, onClick }) => {
     return (
-        <Link href={to}>
-            <div className='flex gap-2 px-3'>
-                <FontAwesomeIcon icon={icon} className='h-6 w-6' />
-                <span>{text}</span>
-            </div>
-        </Link>
+        <button className='flex gap-2 px-3' onClick={onClick}>
+            <FontAwesomeIcon icon={icon} className='h-6 w-6' />
+            <span>{text}</span>
+        </button>
     );
 };
 
