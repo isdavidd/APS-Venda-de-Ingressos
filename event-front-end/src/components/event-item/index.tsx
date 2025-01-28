@@ -22,7 +22,7 @@ const EventItem: FC<EventItemProps> = ({ avatar, banner, title, local, date }) =
                 <span className='font-semibold text-xs'>Eventos e Cia</span>
             </div>
 
-            <div className='relative text-sm w-full h-44'>
+            <div className='relative text-sm w-full h-48'>
                 <Image
                     src={banner}
                     alt="Concert Banner"
