@@ -8,6 +8,7 @@ import com.aps.grupo4.event_management_service.repository.EventoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -68,6 +69,7 @@ public class EventoService {
         }
     }
 
+    @Transactional
     public Evento createEvento(Evento eventoNovo) {
 
         Optional<Evento> eventoJaExistente = eventoRepository.findByNomeEvento(eventoNovo.getNomeEvento());
@@ -82,6 +84,7 @@ public class EventoService {
 
     }
 
+    @Transactional
     public String deleteEvento(String nomeEvento) {
 
         Optional<Evento> eventoJaExistente = eventoRepository.findByNomeEvento(nomeEvento);
