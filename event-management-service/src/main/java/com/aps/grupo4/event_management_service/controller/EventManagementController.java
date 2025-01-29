@@ -1,8 +1,8 @@
 package com.aps.grupo4.event_management_service.controller;
 
 
-import com.aps.grupo4.event_management_service.config.validations.EventoExistenteException;
-import com.aps.grupo4.event_management_service.config.validations.EventoInexistenteException;
+import com.aps.grupo4.event_management_service.config.validations.exceptions.EventoExistenteException;
+import com.aps.grupo4.event_management_service.config.validations.exceptions.EventoInexistenteException;
 import com.aps.grupo4.event_management_service.entity.Evento;
 import com.aps.grupo4.event_management_service.service.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,32 +34,30 @@ public class EventManagementController {
     }
 
 
-    @GetMapping(path = "/event/id-evento/{id}")
+    @GetMapping(path = "/events/id-evento/{id}")
     public ResponseEntity<Object> buscaEventoPorId(@PathVariable("id") Integer id) {
         try {
             var evento = eventoService.getEventoById(id);
 
-            if (evento == null) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-            }
-
             return ResponseEntity.ok().body(evento);
+
+        } catch (EventoInexistenteException e) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
 
-    @GetMapping(path = "/event/nome-evento/{nomeEvento}")
+    @GetMapping(path = "/events/nome-evento/{nomeEvento}")
     public ResponseEntity<Object> buscaEventoPorNome(@PathVariable("nomeEvento") String nomeEvento) {
         try {
             var evento = eventoService.getEventoByNome(nomeEvento);
 
-            if (evento == null) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-            }
-
             return ResponseEntity.ok().body(evento);
+
+        } catch (EventoInexistenteException e) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
@@ -81,15 +79,30 @@ public class EventManagementController {
         }
     }
 
-    @DeleteMapping(path = "/delete-event/{nomeEvento}")
-    public ResponseEntity<Object> deleteEvento(@PathVariable("nomeEvento") String nomeEvento) {
+    @PutMapping(path = "/update-event")
+    public ResponseEntity<Object> updateEvento(@RequestBody Evento eventoNovo) {
         try {
-            var eventoDeletado = eventoService.deleteEvento(nomeEvento);
+            var evento = eventoService.updateEvento(eventoNovo);
 
-            return ResponseHandler.responseBuilder(eventoDeletado, HttpStatus.NO_CONTENT, null);
+            return ResponseEntity.ok().body(evento);
 
         } catch (EventoInexistenteException e) {
-            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NOT_FOUND, null);
+            return  ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NO_CONTENT, null);
+
+        } catch (RuntimeException e) {
+            return  ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @DeleteMapping(path = "/delete-event/{id}")
+    public ResponseEntity<Object> deleteEvento(@PathVariable("id") Integer idEvento) {
+        try {
+            var eventoDeletado = eventoService.deleteEvento(idEvento);
+
+            return ResponseHandler.responseBuilder(String.format("Evento com ID %d deletado com sucesso!", idEvento), HttpStatus.OK, eventoDeletado);
+
+        } catch (EventoInexistenteException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NO_CONTENT, null);
 
         } catch (RuntimeException e) {
             return  ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);

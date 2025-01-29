@@ -32,7 +32,12 @@ public class SecurityConfig {
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(user, admin);
+        UserDetails gestorEventos = User.withUsername("gestor-eventos")
+                .password(passwordEncoder().encode("teste123"))
+                .roles("GESTOR")
+                .build();
+
+        return new InMemoryUserDetailsManager(user, admin, gestorEventos);
     }
 
     @Bean
@@ -44,8 +49,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                         configurer
-                                .requestMatchers(HttpMethod.GET, "/event-management/**").hasRole("USER")
-                                .requestMatchers("/event-management/**").hasRole("ADMIN")
+                                .requestMatchers( "/event-management/events").hasAnyRole("USER", "ADMIN", "GESTOR")
+                                .requestMatchers("/event-management/**").hasAnyRole("ADMIN", "GESTOR")
                                 .anyRequest()
                                 .authenticated()
                 );

@@ -5,6 +5,7 @@ import com.aps.grupo4.event_management_service.config.validations.DataMinima;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class Evento {
     private int id;
 
     @Column(name = "nome", nullable = false)
-    @NotNull(message = "O evento precisar ter nome!")
+    @NotBlank(message = "O evento precisar ter nome!")
     private String nomeEvento;
 
     @Column(name = "data", nullable = false)
