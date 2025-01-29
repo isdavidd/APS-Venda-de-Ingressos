@@ -49,7 +49,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                         configurer
-                                .requestMatchers( "/event-management/events").hasAnyRole("USER", "ADMIN", "GESTOR")
+                                .requestMatchers( "/event-management/events/**").hasAnyRole("USER", "ADMIN", "GESTOR")
                                 .requestMatchers("/event-management/**").hasAnyRole("ADMIN", "GESTOR")
                                 .anyRequest()
                                 .authenticated()
