@@ -7,9 +7,9 @@ spring:
       enable: false
 
   datasource:
-    url: jdbc:mysql://localhost:3306/eventos_db
+    url: jdbc:mysql://localhost:3307/db_aps2
     username: root
-    password: password123
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     initialization-mode: always
 

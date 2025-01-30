@@ -6,6 +6,7 @@ import com.aps.grupo4.event_management_service.config.validations.exceptions.Eve
 import com.aps.grupo4.event_management_service.config.validations.exceptions.EventoInexistenteException;
 import com.aps.grupo4.event_management_service.config.validations.exceptions.FalhaAoAtualizarEventoException;
 import com.aps.grupo4.event_management_service.entity.Evento;
+import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
 import com.aps.grupo4.event_management_service.repository.EventoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class EventoService {
         var eventos = eventoRepository.findAll();
 
         if (eventos.isEmpty()) {
-            log.info("Não há eventos!");
+            log.info("Não há eventos");
             return List.of();
         }
 
@@ -35,20 +36,53 @@ public class EventoService {
 
     }
 
-    public Evento getEventoById(Integer id) {
+    public Evento getEventoById(Long id) {
         return eventoRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Evento com o ID {} não encontrado!", id);
-                    return new EventoInexistenteException(String.format("Evento com o ID %d não existe!", id));
+                    log.info("Evento com o ID {} não encontrado", id);
+                    return new EventoInexistenteException(String.format("Evento com o ID %d não existe", id));
                 });
     }
 
     public Evento getEventoByNome(String nomeEvento) {
         return eventoRepository.findByNomeEventoIgnoreCase(nomeEvento.trim())
                 .orElseThrow(() -> {
-                    log.error("Evento com o nome {} não encontrado!", nomeEvento.trim());
-                    return new EventoInexistenteException(String.format("Evento com o nome %s não existe!", nomeEvento.trim()));
+                    log.info("Evento com o nome {} não encontrado", nomeEvento.trim());
+                    return new EventoInexistenteException(String.format("Evento com o nome %s não existe", nomeEvento.trim()));
                 });
+    }
+
+    public List<Evento> getEventoByCapacidadeMinima(Integer capacidadeMinima) {
+        var eventos = eventoRepository.findByCapacidadeEventoGreaterThanEqual(capacidadeMinima);
+
+        if (eventos.isEmpty()) {
+            log.info("Não há eventos com capacidade mínima de {}", capacidadeMinima);
+            return List.of();
+        }
+
+        return eventos;
+    }
+
+    public List<Evento> getEventoByCapacidadeMaxima(Integer capacidadeMaxima) {
+        var eventos = eventoRepository.findByCapacidadeEventoLessThanEqual(capacidadeMaxima);
+
+        if (eventos.isEmpty()) {
+            log.info("Não há eventos com capacidade máxima de {}", capacidadeMaxima);
+            return List.of();
+        }
+
+        return eventos;
+    }
+
+    public List<Evento> getEventosByUF(UFEnum siglaUF) {
+        var eventos = eventoRepository.findByUfEvento(siglaUF);
+
+        if (eventos.isEmpty()) {
+            log.info("Não há eventos no estado {}", siglaUF);
+            return List.of();
+        }
+
+        return eventos;
     }
 
     @Transactional
@@ -73,7 +107,7 @@ public class EventoService {
 
         var eventoExistente = eventoRepository.findById(eventoASerAtualizado.getId())
                 .orElseThrow(() -> {
-                    log.info("Evento com o ID {} não encontrado!", eventoASerAtualizado.getId());
+                    log.info("Evento com o ID {} não encontrado. Nenhuma atualização foi feita", eventoASerAtualizado.getId());
                     return new EventoInexistenteException(String.format("Evento com o ID %d não existe!", eventoASerAtualizado.getId()));
                 });
 
@@ -105,7 +139,7 @@ public class EventoService {
     }
 
     @Transactional
-    public Evento deleteEvento(Integer idEvento) {
+    public Evento deleteEvento(Long idEvento) {
 
         var eventoDeletado = eventoRepository.findById(idEvento)
                 .orElseThrow(() -> {

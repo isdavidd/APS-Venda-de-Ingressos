@@ -2,6 +2,7 @@ package com.aps.grupo4.event_management_service.repository;
 
 
 import com.aps.grupo4.event_management_service.entity.Evento;
+import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EventoRepository extends JpaRepository<Evento, Integer> {
+public interface EventoRepository extends JpaRepository<Evento, Long> {
 
     Optional<Evento> findByNomeEventoIgnoreCase(String nomeEvento);
 
@@ -23,6 +24,8 @@ public interface EventoRepository extends JpaRepository<Evento, Integer> {
     List<Evento> findByDataEventoAfter(LocalDateTime dataMinima);
 
     List<Evento> findByDataEventoBetween(LocalDateTime inicio, LocalDateTime fim);
+
+    List<Evento> findByUfEvento(UFEnum siglaUF);
 
     List<Evento> findByCapacidadeEventoGreaterThanEqual(Integer capacidadeMinima);
 
@@ -44,7 +47,7 @@ public interface EventoRepository extends JpaRepository<Evento, Integer> {
             "e.descricaoEvento = :descricaoEvento " +
             "WHERE e.id = :id")
     int updateEventoById(
-            @Param("id") Integer id,
+            @Param("id") Long id,
             @Param("nomeEvento") String nomeEvento,
             @Param("dataEvento") LocalDateTime dataEvento,
             @Param("localEvento") String localEvento,
