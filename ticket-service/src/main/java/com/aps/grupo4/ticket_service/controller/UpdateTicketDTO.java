@@ -1,4 +1,6 @@
 package com.aps.grupo4.ticket_service.controller;
 
-public record UpdateTicketDTO(double price, String status, String buyerName, String paymentMethod, String ticketType) {
+import java.math.BigDecimal;
+
+public record UpdateTicketDTO(BigDecimal preco, String status, String nomeComprador, String tipoIngresso) {
 }

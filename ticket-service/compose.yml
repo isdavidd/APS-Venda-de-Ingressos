@@ -2,6 +2,7 @@ services:
   mysql:
     environment:
       MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: db_aps2
     container_name: mysql
     image: mysql:9.2
     volumes:

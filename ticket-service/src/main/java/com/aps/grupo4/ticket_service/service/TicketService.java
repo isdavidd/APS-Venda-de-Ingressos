@@ -6,6 +6,7 @@ import com.aps.grupo4.ticket_service.entity.Ticket;
 import com.aps.grupo4.ticket_service.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -20,16 +21,14 @@ public class TicketService {
 
     public Long createTicket(CreateTicketDTO createTicketDTO){
         var entity = new Ticket(
+                createTicketDTO.eventoId(),
                 null,
                 null,
-                null,
-                createTicketDTO.price(),
-                "Disponível",
-                Instant.now(),
+                createTicketDTO.preco(),
                 null
         );
-        var userSaved = ticketRepository.save(entity);
-        return userSaved.getTicketID();
+        var ticketSaved = ticketRepository.save(entity);
+        return ticketSaved.getId();
     }
 
     public Optional<Ticket> getTicketById(Long ticketID){
@@ -52,20 +51,19 @@ public class TicketService {
         if (ticketEntity.isPresent()){
             var ticket = ticketEntity.get();
 
-            if (updateTicketDTO.price() != 0.0)
-                ticket.setPrice(updateTicketDTO.price());
+            if (updateTicketDTO.preco().compareTo(BigDecimal.ZERO) != 0) {
+                ticket.setPreco(updateTicketDTO.preco());
+            }
 
             if (updateTicketDTO.status() != null)
                 ticket.setStatus(updateTicketDTO.status());
 
-            if (updateTicketDTO.buyerName() != null)
-                ticket.setBuyerName(updateTicketDTO.buyerName());
+            if (updateTicketDTO.nomeComprador() != null)
+                ticket.setNomeComprador(updateTicketDTO.nomeComprador());
 
-            if (updateTicketDTO.paymentMethod() != null)
-                ticket.setPaymentMethod(updateTicketDTO.paymentMethod());
 
-            if (updateTicketDTO.ticketType() != null)
-                ticket.setTicketType(updateTicketDTO.ticketType());
+            if (updateTicketDTO.tipoIngresso() != null)
+                ticket.setTipoIngresso(updateTicketDTO.tipoIngresso());
 
             ticketRepository.save(ticket);
         }

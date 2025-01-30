@@ -1,92 +1,110 @@
 package com.aps.grupo4.ticket_service.entity;
 
+import com.aps.grupo4.ticket_service.config.validation.PrecoMinimo;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
-@Table(name = "tb_tickets")
+@Table(name = "ingresso")
 public class Ticket {
     @Id
-    @Column(name = "ticket_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ticketID;
+    private Long id;
 
-    @Column(name = "ticket_type")
-    private String ticketType;
+    @Column(name = "id_evento", nullable = false)
+    private Long eventoId;
 
-    @Column(name = "payment_method")
-    private String paymentMethod;
+    @Column(name = "id_usuario")
+    private Long usuarioId;
 
-    @Column(name = "buyer_name")
-    private String buyerName;
+    @Column(name = "data_compra")
+    private Instant dataCompra;
 
-    @Column(name = "price")
-    private double price;
+    @NotNull(message = "O ingresso precisa possuir um preço.")
+    @PrecoMinimo
+    @Column(name = "preco", nullable = false)
+    private BigDecimal preco;
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "tipo_ingresso")
+    private String tipoIngresso = "Inteira";
+
+    @Column(name = "status", length = 15)
+    private String status = "Disponivel";
+
+    @Column(name = "nome_comprador", length = 255)
+    private String nomeComprador;
 
     @CreationTimestamp
+    @Column(name = "creation_time_stamp", updatable = false)
     private Instant creationTimeStamp;
 
     @UpdateTimestamp
+    @Column(name = "update_time_stamp")
     private Instant updateTimeStamp;
 
-    public Ticket() {
+    public Ticket() {}
+
+
+    public Ticket(Long eventoId, Long usuarioId, Instant dataCompra, BigDecimal preco, String nomeComprador) {
+        this.eventoId = eventoId;
+        this.usuarioId = usuarioId;
+        this.dataCompra = dataCompra;
+        this.preco = preco;
+        this.nomeComprador = nomeComprador;
     }
 
-    public Ticket(String ticketType, String paymentMethod, String buyerName, double price, String status, Instant creationTimeStamp, Instant updateTimeStamp) {
-        this.ticketType = ticketType;
-        this.paymentMethod = paymentMethod;
-        this.buyerName = buyerName;
-        this.price = price;
-        this.status = status;
-        this.creationTimeStamp = creationTimeStamp;
-        this.updateTimeStamp = updateTimeStamp;
+    // Getters e Setters
+    public Long getId() {
+        return id;
     }
 
-    public Long getTicketID() {
-        return ticketID;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setTicketID(Long ticketID) {
-        this.ticketID = ticketID;
+    public String getTipoIngresso() {
+        return tipoIngresso;
     }
 
-    public String getTicketType() {
-        return ticketType;
+    public void setTipoIngresso(String tipoIngresso) {
+        this.tipoIngresso = tipoIngresso;
     }
 
-    public void setTicketType(String ticketType) {
-        this.ticketType = ticketType;
+    public Long getEventoId() {
+        return eventoId;
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
+    public void setEventoId(Long eventoId) {
+        this.eventoId = eventoId;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public Long getUsuarioId() {
+        return usuarioId;
     }
 
-    public String getBuyerName() {
-        return buyerName;
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
-    public void setBuyerName(String buyerName) {
-        this.buyerName = buyerName;
+    public Instant getDataCompra() {
+        return dataCompra;
     }
 
-    public double getPrice() {
-        return price;
+    public void setDataCompra(Instant dataCompra) {
+        this.dataCompra = dataCompra;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public BigDecimal getPreco() {
+        return preco;
+    }
+
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco;
     }
 
     public String getStatus() {
@@ -97,19 +115,19 @@ public class Ticket {
         this.status = status;
     }
 
+    public String getNomeComprador() {
+        return nomeComprador;
+    }
+
+    public void setNomeComprador(String nomeComprador) {
+        this.nomeComprador = nomeComprador;
+    }
+
     public Instant getCreationTimeStamp() {
         return creationTimeStamp;
     }
 
-    public void setCreationTimeStamp(Instant creationTimeStamp) {
-        this.creationTimeStamp = creationTimeStamp;
-    }
-
     public Instant getUpdateTimeStamp() {
         return updateTimeStamp;
-    }
-
-    public void setUpdateTimeStamp(Instant updateTimeStamp) {
-        this.updateTimeStamp = updateTimeStamp;
     }
 }

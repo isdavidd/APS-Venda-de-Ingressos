@@ -1,4 +1,6 @@
 package com.aps.grupo4.ticket_service.controller;
 
-public record CreateTicketDTO(double price) {
+import java.math.BigDecimal;
+
+public record CreateTicketDTO(BigDecimal preco, Long eventoId) {
 }
