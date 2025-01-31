@@ -88,12 +88,21 @@ public class EventoService {
             throw new SiglaUFInvalidaException("Sigla UF/Nome estado é inválida(o)");
         }
 
+        UFEnum ufEvento = null;
+
+        if (eventoDTO.getEstadoOrUFEvento().length() == 2) {
+            ufEvento = UFEnum.valueOf(eventoDTO.getEstadoOrUFEvento().toUpperCase());
+
+        } else {
+            ufEvento = UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUFEvento());
+        }
+
         var evento = Evento.builder()
                 .nomeEvento(eventoDTO.getNomeEvento())
                 .dataEvento(eventoDTO.getDataEvento())
                 .localEvento(eventoDTO.getLocalEvento())
                 .valorIngressoEvento(eventoDTO.getValorIngressoEvento())
-                .ufEvento(UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUFEvento()))
+                .ufEvento(ufEvento)
                 .descricaoEvento(eventoDTO.getDescricaoEvento())
                 .capacidadeEvento(eventoDTO.getCapacidadeEvento())
                 .build();
@@ -115,6 +124,10 @@ public class EventoService {
     @Transactional
     public Evento updateEvento(EventoDTO eventoDTO) {
 
+        if (eventoDTO.getIdEvento() == null) {
+            throw new IllegalArgumentException("ID do evento deve ser informado");
+        }
+
         var eventoExistente = eventoRepository.findById(eventoDTO.getIdEvento())
                 .orElseThrow(() -> {
                     log.info("Evento com o ID {} não encontrado. Nenhuma atualização foi feita.", eventoDTO.getIdEvento());
@@ -123,7 +136,7 @@ public class EventoService {
 
         if (eventoDTO.getNomeEvento().equalsIgnoreCase(eventoExistente.getNomeEvento())) {
             log.error("O novo nome do evento com ID {} já existe.", eventoDTO.getIdEvento());
-            throw new EventoExistenteException(String.format("O novo nome do evento com ID %d já existia. Escolha outro.", eventoDTO.getIdEvento()));
+            throw new IllegalArgumentException(String.format("O novo nome do evento com ID %d já existia. Escolha outro.", eventoDTO.getIdEvento()));
         }
 
         if (eventoDTO.getDataEvento().isBefore(eventoExistente.getDataEvento())) {

@@ -30,7 +30,8 @@ public enum UFEnum {
     SC("Santa Catarina"),
     SP("São Paulo"),
     SE("Sergipe"),
-    TO("Tocantins");
+    TO("Tocantins"),
+    NA("TBA");
 
     private String estado;
 

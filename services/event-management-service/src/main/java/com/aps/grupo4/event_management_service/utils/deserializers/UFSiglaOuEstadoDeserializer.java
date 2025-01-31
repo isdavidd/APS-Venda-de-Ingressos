@@ -20,12 +20,6 @@ public class UFSiglaOuEstadoDeserializer extends JsonDeserializer<String> {
 
         siglaUFOuNomeEstado = StringUtils.stripAccents(siglaUFOuNomeEstado.trim().toUpperCase());
 
-        if (siglaUFOuNomeEstado.length() == 2) {
-            return UFEnum.valueOf(siglaUFOuNomeEstado).getEstado();
-        }
-
-        var estado = UFEnum.getUFFromEstado(siglaUFOuNomeEstado);
-
-        return estado != null ? estado.getEstado() : null;
+        return siglaUFOuNomeEstado;
     }
 }

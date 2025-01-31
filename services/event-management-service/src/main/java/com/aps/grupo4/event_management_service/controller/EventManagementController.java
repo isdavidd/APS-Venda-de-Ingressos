@@ -98,12 +98,12 @@ public class EventManagementController {
 
             return ResponseEntity.ok().body(evento);
 
+        } catch (IllegalArgumentException e) {
+            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST, null);
+
         } catch (EventoInexistenteException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NO_CONTENT, null);
 
-        } catch (EventoExistenteException e) {
-            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST, null);
-            
         } catch (RuntimeException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
