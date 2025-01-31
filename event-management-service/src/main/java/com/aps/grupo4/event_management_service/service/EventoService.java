@@ -4,7 +4,9 @@ package com.aps.grupo4.event_management_service.service;
 import com.aps.grupo4.event_management_service.config.validations.exceptions.*;
 import com.aps.grupo4.event_management_service.entity.Evento;
 import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
+import com.aps.grupo4.event_management_service.publisher.EventoPublisher;
 import com.aps.grupo4.event_management_service.repository.EventoRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class EventoService {
 
     @Autowired
     private EventoRepository eventoRepository;
+    @Autowired
+    private EventoPublisher eventoPublisher;
 
     public List<Evento> getEventos() {
 
@@ -83,6 +87,12 @@ public class EventoService {
         }
 
         var evento = eventoRepository.save(eventoNovo);
+
+        try {
+            eventoPublisher.publicarEvento(eventoNovo);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         return evento;
 

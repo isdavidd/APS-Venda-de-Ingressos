@@ -40,10 +40,10 @@ public class Evento {
     @NotNull(message = "O evento precisa ter data")
     private LocalDateTime dataEvento;
 
-    @Column(name = "endereco", nullable = false)
-    @NotBlank(message = "O evento precisa ter endereço")
-    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
-    private String enderecoEvento;
+//    @Column(name = "endereco", nullable = false)
+//    @NotBlank(message = "O evento precisa ter endereço")
+//    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
+//    private String enderecoEvento;
 
     @Column(name = "uf", nullable = false)
     @Convert(converter = UFConverter.class)

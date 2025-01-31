@@ -22,6 +22,12 @@ spring:
     show-sql: true
     format-sql: true
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
 #  sql:
 #    init:
 #      platform: mysql                                        # Plataforma para inicialização do banco

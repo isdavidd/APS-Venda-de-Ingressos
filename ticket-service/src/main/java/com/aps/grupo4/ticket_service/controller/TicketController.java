@@ -27,9 +27,9 @@ public class TicketController {
 
     @GetMapping("/{ticketId}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable("ticketId") Long id){
-        var user = ticketService.getTicketById(id);
-        if(user.isPresent())
-            return ResponseEntity.ok(user.get());
+        var ticket = ticketService.getTicketById(id);
+        if(ticket.isPresent())
+            return ResponseEntity.ok(ticket.get());
         else
             return ResponseEntity.notFound().build();
     }
