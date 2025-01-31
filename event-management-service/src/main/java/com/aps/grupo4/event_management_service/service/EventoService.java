@@ -84,7 +84,7 @@ public class EventoService {
             throw new EventoInexistenteException(String.format("Já existe um evento com o nome %s ", eventoDTO.getNomeEvento()));
         }
 
-        if (eventoDTO.getEstadoOrUF() == null) {
+        if (eventoDTO.getEstadoOrUFEvento() == null) {
             throw new SiglaUFInvalidaException("Sigla UF/Nome estado é inválida(o)");
         }
 
@@ -93,7 +93,7 @@ public class EventoService {
                 .dataEvento(eventoDTO.getDataEvento())
                 .localEvento(eventoDTO.getLocalEvento())
                 .valorIngressoEvento(eventoDTO.getValorIngressoEvento())
-                .ufEvento(UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUF()))
+                .ufEvento(UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUFEvento()))
                 .descricaoEvento(eventoDTO.getDescricaoEvento())
                 .capacidadeEvento(eventoDTO.getCapacidadeEvento())
                 .build();
@@ -139,7 +139,7 @@ public class EventoService {
                 eventoDTO.getValorIngressoEvento(),
                 eventoDTO.getCapacidadeEvento(),
                 eventoDTO.getDescricaoEvento(),
-                UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUF())
+                UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUFEvento())
         );
 
         if (registroAtualizado == 0) {

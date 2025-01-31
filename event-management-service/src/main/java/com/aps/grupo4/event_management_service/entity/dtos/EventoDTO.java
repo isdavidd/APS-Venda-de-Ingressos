@@ -33,14 +33,10 @@ public class EventoDTO {
     @NotNull(message = "O evento precisa ter data")
     private LocalDateTime dataEvento;
 
-    @NotBlank(message = "O evento precisa ter endereço")
-    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
-    private String enderecoEvento;
-
     @NotBlank(message = "O evento precisa do nome do estado ou uma Unidade Federativa")
     @JsonDeserialize(using = UFSiglaOuEstadoDeserializer.class)
-    @Length(min = 2)
-    private String estadoOrUF;
+    @Length(min = 2, message = "O campo de Estado/UF deve ter pelo menos 2 caracteres")
+    private String estadoOrUFEvento;
 
     @NotBlank(message = "O evento precisa ter local")
     @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)

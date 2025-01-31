@@ -30,9 +30,6 @@ public class Evento {
     @Column(name = "data", nullable = false)
     private LocalDateTime dataEvento;
 
-    @Column(name = "endereco", nullable = false)
-    private String enderecoEvento;
-
     @Column(name = "uf", nullable = false)
     @Convert(converter = UFConverter.class)
     private UFEnum ufEvento;
