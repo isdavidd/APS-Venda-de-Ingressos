@@ -8,11 +8,12 @@ public class UFConverter implements AttributeConverter<UFEnum, String> {
 
     @Override
     public String convertToDatabaseColumn(UFEnum uf) {
-        return uf != null ? uf.name() : UFEnum.XX.name();
+        return uf != null && UFEnum.isValidUF(uf.name()) ? uf.name() : null;
+
     }
 
     @Override
     public UFEnum convertToEntityAttribute(String siglaUf) {
-        return siglaUf != null ? UFEnum.valueOf(siglaUf) : UFEnum.XX;
+        return UFEnum.isValidUF(siglaUf) ? UFEnum.valueOf(siglaUf) : null;
     }
 }

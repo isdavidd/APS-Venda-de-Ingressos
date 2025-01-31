@@ -1,4 +1,4 @@
-package com.aps.grupo4.event_management_service.config.validations;
+package com.aps.grupo4.event_management_service.config.validations.customValidators;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -8,7 +8,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = DataMinimaValidator.class)
 public @interface DataMinima {

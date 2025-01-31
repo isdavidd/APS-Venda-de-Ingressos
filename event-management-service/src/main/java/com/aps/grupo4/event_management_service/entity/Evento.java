@@ -1,9 +1,13 @@
 package com.aps.grupo4.event_management_service.entity;
 
 
-import com.aps.grupo4.event_management_service.config.validations.DataMinima;
+import com.aps.grupo4.event_management_service.config.validations.customValidators.DataMinima;
 import com.aps.grupo4.event_management_service.entity.converter.UFConverter;
 import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
+import com.aps.grupo4.event_management_service.entity.deserializer.UFSiglaDeserializer;
+import com.aps.grupo4.event_management_service.entity.deserializer.WhiteSpaceRemovalDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 
 import jakarta.validation.constraints.*;
@@ -28,6 +32,7 @@ public class Evento {
 
     @Column(name = "nome", nullable = false)
     @NotBlank(message = "O evento precisar ter nome")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String nomeEvento;
 
     @Column(name = "data", nullable = false)
@@ -37,14 +42,17 @@ public class Evento {
 
     @Column(name = "endereco", nullable = false)
     @NotBlank(message = "O evento precisa ter endereço")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String enderecoEvento;
 
     @Column(name = "uf", nullable = false)
     @Convert(converter = UFConverter.class)
+    @JsonDeserialize(using = UFSiglaDeserializer.class)
     private UFEnum ufEvento;
 
     @Column(name = "local", nullable = false)
-    @NotNull(message = "O evento precisa ter local")
+    @NotBlank(message = "O evento precisa ter local")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String localEvento;
 
     @Column(name = "valor_ingresso", nullable = false)
@@ -57,5 +65,6 @@ public class Evento {
     private Integer capacidadeEvento;
 
     @Column(name = "descricao")
+    @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
     private String descricaoEvento;
 }

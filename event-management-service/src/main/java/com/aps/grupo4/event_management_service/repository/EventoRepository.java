@@ -14,38 +14,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface EventoRepository extends JpaRepository<Evento, Long> {
+public interface EventoRepository extends JpaRepository<Evento, Long>, EventoRepositoryCustom  {
 
     Optional<Evento> findByNomeEventoIgnoreCase(String nomeEvento);
 
-    List<Evento> findByDataEvento(LocalDateTime dataEvento);
-
-    List<Evento> findByDataEventoAfter(LocalDateTime dataMinima);
-
-    List<Evento> findByDataEventoBetween(LocalDateTime inicio, LocalDateTime fim);
-
-    List<Evento> findByUfEvento(UFEnum siglaUF);
-
-    List<Evento> findByCapacidadeEventoGreaterThanEqual(Integer capacidadeMinima);
-
-    List<Evento> findByCapacidadeEventoLessThanEqual(Integer capacidadeMaxima);
-
-    List<Evento> findByLocalEventoIgnoreCase(String local);
-
-    List<Evento> findByNomeEventoStartingWithIgnoreCase(String nomeEvento);
-
-    int deleteByNomeEvento(String nomeEvento);
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE Evento e SET " +
-            "e.nomeEvento = :nomeEvento, " +
-            "e.dataEvento = :dataEvento, " +
-            "e.localEvento = :localEvento, " +
-            "e.valorIngressoEvento = :valorIngressoEvento, " +
-            "e.capacidadeEvento = :capacidadeEvento, " +
-            "e.descricaoEvento = :descricaoEvento " +
-            "WHERE e.id = :id")
+    @Query("""
+            UPDATE Evento e SET 
+            e.nomeEvento = :nomeEvento, 
+            e.dataEvento = :dataEvento, 
+            e.localEvento = :localEvento, 
+            e.valorIngressoEvento = :valorIngressoEvento, 
+            e.capacidadeEvento = :capacidadeEvento, 
+            e.descricaoEvento = :descricaoEvento, 
+            e.ufEvento = :ufEvento 
+            WHERE e.id = :id
+            """)
     int updateEventoById(
             @Param("id") Long id,
             @Param("nomeEvento") String nomeEvento,
@@ -53,6 +37,7 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
             @Param("localEvento") String localEvento,
             @Param("valorIngressoEvento") BigDecimal valorIngressoEvento,
             @Param("capacidadeEvento") Integer capacidadeEvento,
-            @Param("descricaoEvento") String descricaoEvento);
+            @Param("descricaoEvento") String descricaoEvento,
+            @Param("ufEvento") UFEnum ufEvento);
 
 }

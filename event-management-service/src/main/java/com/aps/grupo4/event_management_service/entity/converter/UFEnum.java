@@ -27,8 +27,7 @@ public enum UFEnum {
     SC("Santa Catarina"),
     SP("São Paulo"),
     SE("Sergipe"),
-    TO("Tocantins"),
-    XX("Inválido");
+    TO("Tocantins");
 
     private String estado;
 
@@ -46,7 +45,7 @@ public enum UFEnum {
                 return uf.getEstado();
             }
         }
-        return XX.getEstado();
+        return null;
     }
 
     public static UFEnum getUFFromEstado(String nomeEstado) {
@@ -55,6 +54,20 @@ public enum UFEnum {
                 return uf;
             }
         }
-        return XX;
+        return null;
+    }
+
+    public static boolean isValidUF(String siglaUF) {
+
+        if (siglaUF == null) {
+            return false;
+        }
+
+        for (UFEnum uf : UFEnum.values()) {
+            if (uf.name().equalsIgnoreCase(siglaUF)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

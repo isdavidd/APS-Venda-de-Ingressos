@@ -1,10 +1,7 @@
 package com.aps.grupo4.event_management_service.service;
 
 
-import com.aps.grupo4.event_management_service.config.validations.exceptions.DataEventoInvalidaException;
-import com.aps.grupo4.event_management_service.config.validations.exceptions.EventoExistenteException;
-import com.aps.grupo4.event_management_service.config.validations.exceptions.EventoInexistenteException;
-import com.aps.grupo4.event_management_service.config.validations.exceptions.FalhaAoAtualizarEventoException;
+import com.aps.grupo4.event_management_service.config.validations.exceptions.*;
 import com.aps.grupo4.event_management_service.entity.Evento;
 import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
 import com.aps.grupo4.event_management_service.repository.EventoRepository;
@@ -13,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,41 +42,27 @@ public class EventoService {
                 });
     }
 
-    public Evento getEventoByNome(String nomeEvento) {
-        return eventoRepository.findByNomeEventoIgnoreCase(nomeEvento.trim())
-                .orElseThrow(() -> {
-                    log.info("Evento com o nome {} não encontrado", nomeEvento.trim());
-                    return new EventoInexistenteException(String.format("Evento com o nome %s não existe", nomeEvento.trim()));
-                });
-    }
-
-    public List<Evento> getEventoByCapacidadeMinima(Integer capacidadeMinima) {
-        var eventos = eventoRepository.findByCapacidadeEventoGreaterThanEqual(capacidadeMinima);
-
-        if (eventos.isEmpty()) {
-            log.info("Não há eventos com capacidade mínima de {}", capacidadeMinima);
-            return List.of();
-        }
-
-        return eventos;
-    }
-
-    public List<Evento> getEventoByCapacidadeMaxima(Integer capacidadeMaxima) {
-        var eventos = eventoRepository.findByCapacidadeEventoLessThanEqual(capacidadeMaxima);
+    public List<Evento> buscarEventosPorParametros(
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim,
+            String siglaUF,
+            Integer capacidadeMinima,
+            Integer capacidadeMaxima,
+            String local,
+            String nomeEvento
+    ) {
+        var eventos = eventoRepository.buscarEventosPorParametros(
+                dataInicio,
+                dataFim,
+                siglaUF,
+                capacidadeMinima,
+                capacidadeMaxima,
+                local,
+                nomeEvento
+        );
 
         if (eventos.isEmpty()) {
-            log.info("Não há eventos com capacidade máxima de {}", capacidadeMaxima);
-            return List.of();
-        }
-
-        return eventos;
-    }
-
-    public List<Evento> getEventosByUF(UFEnum siglaUF) {
-        var eventos = eventoRepository.findByUfEvento(siglaUF);
-
-        if (eventos.isEmpty()) {
-            log.info("Não há eventos no estado {}", siglaUF);
+            log.info("Não há eventos");
             return List.of();
         }
 
@@ -88,7 +72,9 @@ public class EventoService {
     @Transactional
     public Evento createEvento(Evento eventoNovo) {
 
-        eventoNovo.setNomeEvento(eventoNovo.getNomeEvento().trim());
+        if (eventoNovo.getUfEvento() == null) {
+            throw new SiglaUFInvalidaException("Sigla UF inválida");
+        }
 
         Optional<Evento> eventoJaExistente = eventoRepository.findByNomeEventoIgnoreCase(eventoNovo.getNomeEvento());
 
@@ -107,13 +93,18 @@ public class EventoService {
 
         var eventoExistente = eventoRepository.findById(eventoASerAtualizado.getId())
                 .orElseThrow(() -> {
-                    log.info("Evento com o ID {} não encontrado. Nenhuma atualização foi feita", eventoASerAtualizado.getId());
-                    return new EventoInexistenteException(String.format("Evento com o ID %d não existe!", eventoASerAtualizado.getId()));
+                    log.info("Evento com o ID {} não encontrado. Nenhuma atualização foi feita.", eventoASerAtualizado.getId());
+                    return new EventoInexistenteException(String.format("Evento com o ID %d não existe.", eventoASerAtualizado.getId()));
                 });
 
+        if (eventoASerAtualizado.getNomeEvento().equalsIgnoreCase(eventoExistente.getNomeEvento())) {
+            log.error("O novo nome do evento com ID {} já existe.", eventoASerAtualizado.getId());
+            throw new EventoExistenteException(String.format("O novo nome do evento com ID %d já existia. Escolha outro.", eventoASerAtualizado.getId()));
+        }
+
         if (eventoASerAtualizado.getDataEvento().isBefore(eventoExistente.getDataEvento())) {
-            log.error("A nova data do evento com ID {} é inválida!", eventoASerAtualizado.getId());
-            throw new DataEventoInvalidaException(String.format("A nova data do evento com ID %d é inválida!", eventoASerAtualizado.getId()));
+            log.error("A nova data do evento com ID {} é inválida", eventoASerAtualizado.getId());
+            throw new DataEventoInvalidaException(String.format("A nova data do evento com ID %d é inválida. Digite uma data válida.", eventoASerAtualizado.getId()));
         }
 
         var registroAtualizado = eventoRepository.updateEventoById(
@@ -123,7 +114,8 @@ public class EventoService {
                 eventoASerAtualizado.getLocalEvento(),
                 eventoASerAtualizado.getValorIngressoEvento(),
                 eventoASerAtualizado.getCapacidadeEvento(),
-                eventoASerAtualizado.getDescricaoEvento()
+                eventoASerAtualizado.getDescricaoEvento(),
+                eventoASerAtualizado.getUfEvento()
         );
 
         if (registroAtualizado == 0) {
