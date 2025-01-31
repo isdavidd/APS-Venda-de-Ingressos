@@ -1,4 +1,4 @@
-package com.aps.grupo4.event_management_service.entity.deserializer;
+package com.aps.grupo4.event_management_service.utils.deserializers;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

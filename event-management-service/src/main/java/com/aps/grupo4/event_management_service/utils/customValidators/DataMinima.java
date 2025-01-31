@@ -1,4 +1,4 @@
-package com.aps.grupo4.event_management_service.config.validations.customValidators;
+package com.aps.grupo4.event_management_service.utils.customValidators;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

@@ -1,5 +1,8 @@
 package com.aps.grupo4.event_management_service.entity.converter;
 
+
+import org.apache.commons.lang3.StringUtils;
+
 public enum UFEnum {
     AC("Acre"),
     AL("Alagoas"),
@@ -65,6 +68,20 @@ public enum UFEnum {
 
         for (UFEnum uf : UFEnum.values()) {
             if (uf.name().equalsIgnoreCase(siglaUF)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isValidEstado(String estado) {
+
+        if (estado == null) {
+            return false;
+        }
+
+        for (UFEnum uf : UFEnum.values()) {
+            if (StringUtils.stripAccents(uf.getEstado()).equalsIgnoreCase(StringUtils.stripAccents(estado))) {
                 return true;
             }
         }

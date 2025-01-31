@@ -1,16 +1,11 @@
 package com.aps.grupo4.event_management_service.controller;
 
 
-import com.aps.grupo4.event_management_service.config.validations.exceptions.EventoExistenteException;
-import com.aps.grupo4.event_management_service.config.validations.exceptions.EventoInexistenteException;
-import com.aps.grupo4.event_management_service.config.validations.exceptions.SiglaUFInvalidaException;
-import com.aps.grupo4.event_management_service.entity.Evento;
-import com.aps.grupo4.event_management_service.entity.converter.UFConverter;
-import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
-import com.aps.grupo4.event_management_service.entity.deserializer.UFSiglaDeserializer;
+import com.aps.grupo4.event_management_service.utils.exceptions.EventoExistenteException;
+import com.aps.grupo4.event_management_service.utils.exceptions.EventoInexistenteException;
+import com.aps.grupo4.event_management_service.utils.exceptions.SiglaUFInvalidaException;
+import com.aps.grupo4.event_management_service.entity.dtos.EventoDTO;
 import com.aps.grupo4.event_management_service.service.EventoService;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import jakarta.persistence.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -82,9 +77,9 @@ public class EventManagementController {
     }
 
     @PostMapping(path = "/create-event")
-    public ResponseEntity<Object> createEvento(@RequestBody Evento eventoNovo) {
+    public ResponseEntity<Object> createEvento(@RequestBody EventoDTO eventoDTO) {
         try {
-            var evento = eventoService.createEvento(eventoNovo);
+            var evento = eventoService.createEvento(eventoDTO);
 
             return ResponseEntity.ok().body(evento);
 
@@ -97,9 +92,9 @@ public class EventManagementController {
     }
 
     @PutMapping(path = "/update-event")
-    public ResponseEntity<Object> updateEvento(@RequestBody Evento eventoNovo) {
+    public ResponseEntity<Object> updateEvento(@RequestBody EventoDTO eventoDTO) {
         try {
-            var evento = eventoService.updateEvento(eventoNovo);
+            var evento = eventoService.updateEvento(eventoDTO);
 
             return ResponseEntity.ok().body(evento);
 

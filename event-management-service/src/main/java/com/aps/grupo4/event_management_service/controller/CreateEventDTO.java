@@ -3,12 +3,12 @@ package com.aps.grupo4.event_management_service.controller;
 import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public class CreateEventDTO {
     private Long id;
     private Integer capacidadeEvento;
     private BigDecimal valorIngressoEvento;
+
     public CreateEventDTO(Long id, Integer capacidadeEvento, BigDecimal valorIngressoEvento) {
         this.id = id;
         this.capacidadeEvento = capacidadeEvento;
