@@ -7,7 +7,6 @@ import com.aps.grupo4.ticket_service.repository.TicketRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class TicketService {
                 createTicketDTO.preco(),
                 null
         );
-        var ticketSaved = ticketRepository.save(entity);
+        Ticket ticketSaved = ticketRepository.save(entity);
         return ticketSaved.getId();
     }
 
@@ -39,21 +38,22 @@ public class TicketService {
         return ticketRepository.findAll();
     }
 
-    public void deleteById(Long id){
-        var ticketExists = ticketRepository.existsById(id);
-        if(ticketExists)
+    public Optional<Ticket> deleteById(Long id){
+        Optional<Ticket> ticketExist = ticketRepository.findById(id);
+        if(ticketExist.isPresent()) {
             ticketRepository.deleteById(id);
+            return ticketExist;
+        }
+        return ticketExist;
     }
 
-    public void updateById(Long ticketId, UpdateTicketDTO updateTicketDTO){
+    public Optional<Ticket> updateById(Long ticketId, UpdateTicketDTO updateTicketDTO){
         var ticketEntity = getTicketById(ticketId);
 
         if (ticketEntity.isPresent()){
             var ticket = ticketEntity.get();
-
-            if (updateTicketDTO.preco().compareTo(BigDecimal.ZERO) != 0) {
+            if (updateTicketDTO.preco() != null)
                 ticket.setPreco(updateTicketDTO.preco());
-            }
 
             if (updateTicketDTO.status() != null)
                 ticket.setStatus(updateTicketDTO.status());
@@ -65,7 +65,8 @@ public class TicketService {
             if (updateTicketDTO.tipoIngresso() != null)
                 ticket.setTipoIngresso(updateTicketDTO.tipoIngresso());
 
-            ticketRepository.save(ticket);
+            return Optional.of(ticketRepository.save(ticket));
         }
+        return Optional.empty();
     }
 }

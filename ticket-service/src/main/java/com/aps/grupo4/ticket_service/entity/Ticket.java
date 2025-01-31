@@ -26,7 +26,7 @@ public class Ticket {
     private Instant dataCompra;
 
     @NotNull(message = "O ingresso precisa possuir um preço.")
-    @PrecoMinimo
+    @PrecoMinimo(message = "O ingresso não pode ter preço negativo.")
     @Column(name = "preco", nullable = false)
     private BigDecimal preco;
 
@@ -58,7 +58,6 @@ public class Ticket {
         this.nomeComprador = nomeComprador;
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
