@@ -28,29 +28,30 @@ spring:
     username: guest
     password: guest
 
-#  sql:
-#    init:
-#      platform: mysql                                        # Plataforma para inicialização do banco
-#      mode: always                                           # Executa scripts SQL ao inicializar
-
 server:
   port: 8080
   servlet.context-path: /api
 
 logging:
   level:
-    root: info                                               # Nível de log padrão
-#    org.hibernate.SQL: debug                                 # Mostra as queries SQL
-#    org.hibernate.type.descriptor.sql: trace                 # Mostra parâmetros das queries SQL
-  file.name: logs/application.log
-  file.path: logs
+    root: info
+#    org.hibernate.SQL: debug
+#    org.hibernate.type.descriptor.sql: trace
+#  file.name: logs/application.log
+#  file.path: logs
+
+rabbitmq:
+  host: localhost
+  port: 5672
+  username: guest
+  password: guest
 
 management:
   endpoints:
     web:
       exposure:
-        include: '*'                                         # Expõe todos os endpoints do actuator
+        include: '*'
   endpoint:
     health:
-      show-details: always                                   # Exibe detalhes nos relatórios de saúde
+      show-details: always
 

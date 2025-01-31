@@ -16,14 +16,14 @@ services:
 
   # service-events:
   #   build:
-  #     context: ./services/service-events # Caminho do serviço de eventos
-  #   container_name: service-events
+  #     context: ./services/event-management-service 
+  #   container_name: event-management-service
   #   ports:
-  #     - "8081:8081" # Porta para acessar o serviço
+  #     - "8081:8081" 
   #   environment:
-  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/event_management
-  #     SPRING_DATASOURCE_USERNAME: user
-  #     SPRING_DATASOURCE_PASSWORD: password
+  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/db_aps2
+  #     SPRING_DATASOURCE_USERNAME: root
+  #     SPRING_DATASOURCE_PASSWORD: 123456
   #   networks:
   #     - springboot-network
   #   depends_on:

@@ -1,26 +1,23 @@
-FROM eclipse-temurin:23-jdk AS build
+FROM maven:3.9.9-eclipse-temurin-23 AS build
 
-RUN apt-get update \
-  && apt-get install -y ca-certificates curl git openssh-client --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-# common for all images
-LABEL org.opencontainers.image.title="Apache Maven"
-LABEL org.opencontainers.image.source=https://github.com/carlossg/docker-maven
-LABEL org.opencontainers.image.url=https://github.com/carlossg/docker-maven
-LABEL org.opencontainers.image.description="Apache Maven is a software project management and comprehension tool. Based on the concept of a project object model (POM), Maven can manage a project's build, reporting and documentation from a central piece of information."
+COPY pom.xml .
 
-ENV MAVEN_HOME=/usr/share/maven
+RUN mvn dependency:go-offline -B
 
-COPY --from=maven:3.9.9-eclipse-temurin-17 ${MAVEN_HOME} ${MAVEN_HOME}
-COPY --from=maven:3.9.9-eclipse-temurin-17 /usr/local/bin/mvn-entrypoint.sh /usr/local/bin/mvn-entrypoint.sh
-COPY --from=maven:3.9.9-eclipse-temurin-17 /usr/share/maven/ref/settings-docker.xml /usr/share/maven/ref/settings-docker.xml
+COPY src ./src
 
-RUN ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
+COPY
 
-ARG MAVEN_VERSION=3.9.9
-ARG USER_HOME_DIR="/root"
-ENV MAVEN_CONFIG="$USER_HOME_DIR/.m2"
+RUN mvn clean package -DskipTests
 
-ENTRYPOINT ["/usr/local/bin/mvn-entrypoint.sh"]
-CMD ["mvn"]
+FROM eclipse-temurin:23-jdk
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=./app/src/main/resources/application.yml"]
