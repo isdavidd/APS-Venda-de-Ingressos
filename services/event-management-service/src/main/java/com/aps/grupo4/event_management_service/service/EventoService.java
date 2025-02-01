@@ -6,6 +6,7 @@ import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
 import com.aps.grupo4.event_management_service.entity.dtos.EventoDTO;
 import com.aps.grupo4.event_management_service.publisher.EventoPublisher;
 import com.aps.grupo4.event_management_service.repository.EventoRepository;
+import com.aps.grupo4.event_management_service.repository.TicketRepository;
 import com.aps.grupo4.event_management_service.utils.exceptions.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -23,6 +23,9 @@ public class EventoService {
 
     @Autowired
     private EventoRepository eventoRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
 
     @Autowired
     private EventoPublisher eventoPublisher;
@@ -76,7 +79,7 @@ public class EventoService {
     }
 
     @Transactional
-    public Evento createEvento(EventoDTO eventoDTO) {
+    public Evento createEvento(EventoDTO eventoDTO) throws JsonProcessingException{
 
         if (eventoDTO.getEstadoOrUFEvento() == null) {
             throw new SiglaUFInvalidaException("Sigla UF/Nome estado é inválida(o)");
@@ -103,20 +106,14 @@ public class EventoService {
 
         eventoRepository.save(evento);
 
-        try {
-            eventoPublisher.publicarEvento(evento);
-
-        } catch (JsonProcessingException e) {
-
-            throw new RuntimeException(e);
-        }
+        eventoPublisher.publicarEventoCriado(evento);
 
         return evento;
 
     }
 
     @Transactional
-    public Evento updateEvento(EventoDTO eventoDTO) {
+    public Evento updateEvento(EventoDTO eventoDTO) throws JsonProcessingException {
 
         if (eventoDTO.getIdEvento() == null) {
             throw new IllegalArgumentException("ID do evento deve ser informado");
@@ -149,15 +146,33 @@ public class EventoService {
             throw new FalhaAoAtualizarEventoException(String.format("Ocorreu um erro ao atualizar o evento com ID %d. Nenhuma alteração foi feita", eventoDTO.getIdEvento()));
         }
 
-        return eventoRepository.findById(eventoDTO.getIdEvento())
+        var eventoAtualizado = eventoRepository.findById(eventoDTO.getIdEvento())
                 .orElseThrow(() -> {
                     log.error("Ocorreu um erro ao buscar o evento com o ID {}", eventoDTO.getIdEvento());
                     return new EventoInexistenteException(String.format("Ocorreu um erro ao buscar o evento atualizado com o ID %d", eventoDTO.getIdEvento()));
                 });
+
+        Integer diferencaCapacidade = null;
+
+        if (eventoAtualizado.getCapacidadeEvento() > eventoExistente.getCapacidadeEvento()) {
+            diferencaCapacidade = eventoAtualizado.getCapacidadeEvento() - eventoExistente.getCapacidadeEvento();
+
+            eventoPublisher.publicarEventoAtualizado(eventoAtualizado,true, diferencaCapacidade);
+        }
+
+        if (eventoAtualizado.getCapacidadeEvento() < eventoExistente.getCapacidadeEvento()) {
+            diferencaCapacidade =  eventoExistente.getCapacidadeEvento() - eventoAtualizado.getCapacidadeEvento();
+
+            Long ingressosVendidos = ticketRepository.countByEventoIdAndUsuarioIdIsNull(eventoAtualizado.getId());
+
+            eventoPublisher.publicarEventoAtualizado(eventoAtualizado, false, diferencaCapacidade);
+        }
+
+        return eventoAtualizado;
     }
 
     @Transactional
-    public Evento deleteEvento(Long idEvento) {
+    public Evento deleteEvento(Long idEvento) throws JsonProcessingException {
 
         var eventoDeletado = eventoRepository.findById(idEvento)
                 .orElseThrow(() -> {
@@ -166,6 +181,8 @@ public class EventoService {
                 });
 
         eventoRepository.deleteById(idEvento);
+
+        eventoPublisher.publicarCancelamentoDeEvento(eventoDeletado);
 
         return eventoDeletado;
     }

@@ -14,8 +14,6 @@ import java.util.Optional;
 
 public interface EventoRepository extends JpaRepository<Evento, Long>, EventoRepositoryCustom  {
 
-    Optional<Evento> findByNomeEventoIgnoreCase(String nomeEvento);
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE Evento e SET 

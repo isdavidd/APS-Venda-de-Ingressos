@@ -24,7 +24,7 @@ public class Evento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome", nullable = false)
+    @Column(name = "nome", nullable = false, length = 255)
     private String nomeEvento;
 
     @Column(name = "data", nullable = false)
@@ -34,7 +34,7 @@ public class Evento {
     @Convert(converter = UFConverter.class)
     private UFEnum ufEvento;
 
-    @Column(name = "local", nullable = false)
+    @Column(name = "local", nullable = false, length = 255)
     private String localEvento;
 
     @Column(name = "valor_ingresso", nullable = false)
@@ -43,6 +43,6 @@ public class Evento {
     @Column(name = "capacidade", nullable = false)
     private Integer capacidadeEvento;
 
-    @Column(name = "descricao")
+    @Column(name = "descricao", length = 255)
     private String descricaoEvento;
 }

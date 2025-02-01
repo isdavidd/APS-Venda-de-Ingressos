@@ -6,6 +6,7 @@ import com.aps.grupo4.event_management_service.utils.exceptions.EventoInexistent
 import com.aps.grupo4.event_management_service.utils.exceptions.SiglaUFInvalidaException;
 import com.aps.grupo4.event_management_service.entity.dtos.EventoDTO;
 import com.aps.grupo4.event_management_service.service.EventoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -86,7 +87,7 @@ public class EventManagementController {
         } catch (SiglaUFInvalidaException | EventoExistenteException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.BAD_REQUEST, null);
 
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | JsonProcessingException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
@@ -104,7 +105,7 @@ public class EventManagementController {
         } catch (EventoInexistenteException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NO_CONTENT, null);
 
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | JsonProcessingException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
@@ -119,7 +120,7 @@ public class EventManagementController {
         } catch (EventoInexistenteException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.NO_CONTENT, null);
 
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | JsonProcessingException e) {
             return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }

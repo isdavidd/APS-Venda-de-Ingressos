@@ -27,6 +27,7 @@ public class EventoDTO {
 
     @NotBlank(message = "O evento precisar ter nome")
     @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
+    @Length(max = 255, message = "O tamanho não pode exceder 255 caracteres")
     private String nomeEvento;
 
     @DataMinima
@@ -40,6 +41,7 @@ public class EventoDTO {
 
     @NotBlank(message = "O evento precisa ter local")
     @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
+    @Length(max = 255, message = "O tamanho não pode exceder 255 caracteres")
     private String localEvento;
 
     @NotNull(message = "O valor do ingresso não pode ser nulo")
@@ -50,5 +52,6 @@ public class EventoDTO {
     private Integer capacidadeEvento;
 
     @JsonDeserialize(using = WhiteSpaceRemovalDeserializer.class)
+    @Length(max = 255, message = "O tamanho não pode exceder 255 caracteres")
     private String descricaoEvento;
 }

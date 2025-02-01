@@ -7,7 +7,7 @@ spring:
       enable: false
 
   datasource:
-    url: jdbc:mysql://localhost:3307/db_aps2
+    url: jdbc:mysql://localhost:3308/db_aps_snapshot
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
