@@ -9,7 +9,11 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
+# Imagem para a execução
 FROM eclipse-temurin:23-jdk
+
+# Instalar o curl
+RUN apt-get update && apt-get install -y curl
 
 WORKDIR /app
 

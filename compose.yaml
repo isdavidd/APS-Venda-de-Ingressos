@@ -13,6 +13,11 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - aplicacao-venda-ingressos
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=123456"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
   rabbit-mq-aps2:
     image: rabbitmq:management
@@ -25,6 +30,14 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     networks:
       - aplicacao-venda-ingressos
+    depends_on:
+      mysql-aps2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
   service-events:
     build:
@@ -41,15 +54,23 @@ services:
     networks:
       - aplicacao-venda-ingressos
     depends_on:
-      - mysql-aps2
-      - rabbit-mq-aps2
+      rabbit-mq-aps2:
+        condition: service_healthy
+      mysql-aps2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u admin:teste123 -f http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
   service-tickets:
     build:
       context: ./services/ticket-service
     container_name: tickets-service
     ports:
-      - "8081:8081" 
+      - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
       SPRING_DATASOURCE_USERNAME: root
@@ -59,9 +80,18 @@ services:
     networks:
       - aplicacao-venda-ingressos
     depends_on:
-      - service-events
-      - mysql-aps2
-      - rabbit-mq-aps2
+      service-events:
+        condition: service_healthy
+      rabbit-mq-aps2:
+        condition: service_healthy
+      mysql-aps2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
 volumes:
   mysql_data:
