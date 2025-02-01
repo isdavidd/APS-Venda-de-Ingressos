@@ -1,34 +1,34 @@
 package com.aps.grupo4.notification_service.controller;
 
-import com.aps.grupo4.notification_service.controller.dtos.CreateNotificationDTO;
-import com.aps.grupo4.notification_service.service.NotificationService;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
-@RestController
-@RequestMapping("/v1/notifications")
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Controller
+@CrossOrigin(origins = "http://localhost:3000")
 public class NotificationController {
-    private NotificationService notificationService;
+    private final Map<Long, Sinks.Many<String>> userSinks = new ConcurrentHashMap<>();
 
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    @GetMapping(value = "/notifications/{userId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> streamNotifications(@PathVariable Long userId) {
+        userSinks.putIfAbsent(userId, Sinks.many().multicast().onBackpressureBuffer());
+        return userSinks.get(userId).asFlux();
     }
 
-    @PostMapping
-    public ResponseEntity<Object> createNotification(@RequestBody CreateNotificationDTO createNotificationDTO){
-        try{
-            var notificationId = notificationService.createNotification(createNotificationDTO);
-            return ResponseEntity.ok().body(notificationId);
-        } catch (RuntimeException e) {
-            return ResponseHandler.responseBuilder(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-        }
-    }
-
-    @GetMapping("/{UserId}")
-    public ResponseEntity<Object> getNotificationsByUserid(@PathVariable("UserId") Long UserId){
-        try{
-
+    @PostMapping("/notify/{userId}")
+    public ResponseEntity<Void> notify(@PathVariable Long userId, @RequestBody String message) {
+        Sinks.Many<String> sink = userSinks.get(userId);
+        if (sink != null) {
+            sink.tryEmitNext(message);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }
