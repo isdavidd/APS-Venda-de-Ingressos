@@ -3,6 +3,10 @@ package com.aps.grupo4.ticket_service.entity;
 import com.aps.grupo4.ticket_service.config.validation.PrecoMinimo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -11,7 +15,12 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "ingresso")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Ticket {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,87 +55,4 @@ public class Ticket {
     @UpdateTimestamp
     @Column(name = "update_time_stamp")
     private Instant updateTimeStamp;
-
-    public Ticket() {}
-
-
-    public Ticket(Long eventoId, Long usuarioId, Instant dataCompra, BigDecimal preco, String nomeComprador) {
-        this.eventoId = eventoId;
-        this.usuarioId = usuarioId;
-        this.dataCompra = dataCompra;
-        this.preco = preco;
-        this.nomeComprador = nomeComprador;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTipoIngresso() {
-        return tipoIngresso;
-    }
-
-    public void setTipoIngresso(String tipoIngresso) {
-        this.tipoIngresso = tipoIngresso;
-    }
-
-    public Long getEventoId() {
-        return eventoId;
-    }
-
-    public void setEventoId(Long eventoId) {
-        this.eventoId = eventoId;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    public Instant getDataCompra() {
-        return dataCompra;
-    }
-
-    public void setDataCompra(Instant dataCompra) {
-        this.dataCompra = dataCompra;
-    }
-
-    public BigDecimal getPreco() {
-        return preco;
-    }
-
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getNomeComprador() {
-        return nomeComprador;
-    }
-
-    public void setNomeComprador(String nomeComprador) {
-        this.nomeComprador = nomeComprador;
-    }
-
-    public Instant getCreationTimeStamp() {
-        return creationTimeStamp;
-    }
-
-    public Instant getUpdateTimeStamp() {
-        return updateTimeStamp;
-    }
 }

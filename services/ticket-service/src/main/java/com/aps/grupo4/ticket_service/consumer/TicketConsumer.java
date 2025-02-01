@@ -52,8 +52,13 @@ public class TicketConsumer {
             QueuedNewEventDTO queuedNewEventDTO = objectMapper.readValue(message, QueuedNewEventDTO.class);
 
             List<Ticket> ingressos = new ArrayList<>();
+
             for (int i = 0; i < queuedNewEventDTO.getCapacidadeEvento(); i++) {
-                ingressos.add(new Ticket(queuedNewEventDTO.getId(), null, null, queuedNewEventDTO.getValorIngressoEvento(), null));
+                ingressos.add(Ticket.builder()
+                                .id(queuedNewEventDTO.getId())
+                                .preco(queuedNewEventDTO.getValorIngressoEvento())
+                                .build()
+                );
             }
 
             ticketRepository.saveAll(ingressos);
@@ -76,16 +81,21 @@ public class TicketConsumer {
             if (isCapacidadeAumentada) {
 
                 List<Ticket> ingressos = new ArrayList<>();
+
                 for (int i = 0; i < queuedUpdatedEventDTO.getCapacidadeEvento(); i++) {
-                    ingressos.add(new Ticket(queuedUpdatedEventDTO.getId(), null, null, queuedUpdatedEventDTO.getValorIngressoEvento(), null));
+                    ingressos.add(Ticket.builder()
+                                    .id(queuedUpdatedEventDTO.getId())
+                                    .preco(queuedUpdatedEventDTO.getValorIngressoEvento())
+                                    .build()
+                    );
                 }
 
                 ticketRepository.saveAll(ingressos);
-                log.info("Evento com ID {} aumentou sua capacidade. {} novos ingressos foram cirados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
+                log.info("✅ Evento com ID {} aumentou sua capacidade. {} novos ingressos foram cirados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
             }
 
-            ticketRepository.saveAll(ingressos);
-            log.info("Evento com ID {} aumentou sua capacidade. {} novos ingressos foram cirados", eventoDTO.getId(), eventoDTO.getDiferencaCapacidade());
+            ticketRepository.registrosAfetados(queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
+            log.info("❌ Evento com ID {} diminuiu sua capacidade. {} ingressos foram apagados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
 
 
         } catch (JsonProcessingException e) {

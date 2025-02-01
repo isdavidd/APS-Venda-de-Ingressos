@@ -79,7 +79,7 @@ public class EventoService {
     }
 
     @Transactional
-    public Evento createEvento(EventoDTO eventoDTO) throws JsonProcessingException{
+    public Evento createEvento(EventoDTO eventoDTO) throws JsonProcessingException {
 
         if (eventoDTO.getEstadoOrUFEvento() == null) {
             throw new SiglaUFInvalidaException("Sigla UF/Nome estado é inválida(o)");
@@ -106,7 +106,9 @@ public class EventoService {
 
         eventoRepository.save(evento);
 
-        eventoPublisher.publicarEventoCriado(evento);
+        var eventoCriado = eventoRepository.findByNomeEventoIgnoreCase(eventoDTO.getNomeEvento());
+
+        eventoPublisher.publicarEventoCriado(eventoCriado.get());
 
         return evento;
 
@@ -128,6 +130,18 @@ public class EventoService {
         if (eventoDTO.getDataEvento().isBefore(eventoExistente.getDataEvento())) {
             log.error("A nova data do evento com ID {} é inválida", eventoDTO.getIdEvento());
             throw new DataEventoInvalidaException(String.format("A nova data do evento com ID %d é inválida. Digite uma data válida.", eventoDTO.getIdEvento()));
+        }
+
+        Integer ingressosVendidos = ticketRepository.countByEventoIdAndUsuarioIdIsNotNull(eventoExistente.getId());
+        Integer ingressosASeremRemovidos = null;
+
+        if (eventoDTO.getCapacidadeEvento() <= ingressosVendidos) {
+            eventoDTO.setCapacidadeEvento(ingressosVendidos);
+        }
+
+        if (eventoDTO.getCapacidadeEvento() < eventoExistente.getCapacidadeEvento()) {
+            ingressosASeremRemovidos = eventoExistente.getCapacidadeEvento() - eventoDTO.getCapacidadeEvento();
+
         }
 
         var registroAtualizado = eventoRepository.updateEventoById(
@@ -152,20 +166,16 @@ public class EventoService {
                     return new EventoInexistenteException(String.format("Ocorreu um erro ao buscar o evento atualizado com o ID %d", eventoDTO.getIdEvento()));
                 });
 
-        Integer diferencaCapacidade = null;
-
         if (eventoAtualizado.getCapacidadeEvento() > eventoExistente.getCapacidadeEvento()) {
-            diferencaCapacidade = eventoAtualizado.getCapacidadeEvento() - eventoExistente.getCapacidadeEvento();
 
-            eventoPublisher.publicarEventoAtualizado(eventoAtualizado,true, diferencaCapacidade);
+            Integer ingressosASeremCriados = eventoAtualizado.getCapacidadeEvento() - eventoExistente.getCapacidadeEvento();
+
+            eventoPublisher.publicarEventoAtualizado(eventoAtualizado, true, ingressosASeremCriados);
         }
 
         if (eventoAtualizado.getCapacidadeEvento() < eventoExistente.getCapacidadeEvento()) {
-            diferencaCapacidade =  eventoExistente.getCapacidadeEvento() - eventoAtualizado.getCapacidadeEvento();
 
-            Long ingressosVendidos = ticketRepository.countByEventoIdAndUsuarioIdIsNull(eventoAtualizado.getId());
-
-            eventoPublisher.publicarEventoAtualizado(eventoAtualizado, false, diferencaCapacidade);
+            eventoPublisher.publicarEventoAtualizado(eventoAtualizado, false, ingressosASeremRemovidos);
         }
 
         return eventoAtualizado;

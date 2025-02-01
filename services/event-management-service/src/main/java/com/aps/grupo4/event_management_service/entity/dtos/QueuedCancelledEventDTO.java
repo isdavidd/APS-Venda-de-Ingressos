@@ -1,18 +1,15 @@
 package com.aps.grupo4.event_management_service.entity.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QueuedCancelledEventDTO extends QueuedEventoDTO {
+@Builder
+public class QueuedCancelledEventDTO {
+    private Long id;
+    private String nomeEvento;
+    private Integer capacidadeEvento;
 
-    public QueuedCancelledEventDTO(Long id, String nomeEvento, Integer capacidadeEvento) {
-        super(id, nomeEvento, capacidadeEvento);
-    }
 }

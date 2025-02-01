@@ -8,17 +8,15 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@EqualsAndHashCode(callSuper = true)
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QueuedUpdatedEventDTO extends QueuedEventDTO {
+public class QueuedUpdatedEventDTO {
+    private Long id;
+    private String nomeEvento;
+    private Integer capacidadeEvento;
     private BigDecimal valorIngressoEvento;
     private Integer diferencaCapacidade;
 
-    public QueuedUpdatedEventDTO(Long id, String nomeEvento, Integer capacidadeEvento, BigDecimal valorIngressoEvento ,Integer diferencaCapacidade) {
-        super(id, nomeEvento, capacidadeEvento);
-        this.valorIngressoEvento = valorIngressoEvento;
-        this.diferencaCapacidade = diferencaCapacidade;
-    }
 }

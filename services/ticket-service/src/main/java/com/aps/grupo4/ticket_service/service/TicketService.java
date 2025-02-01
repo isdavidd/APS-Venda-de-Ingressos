@@ -18,14 +18,13 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
     }
 
-    public Long createTicket(CreateTicketDTO createTicketDTO){
-        var entity = new Ticket(
-                createTicketDTO.eventoId(),
-                null,
-                null,
-                createTicketDTO.preco(),
-                null
-        );
+    public Long createTicket(CreateTicketDTO createTicketDTO) {
+
+        var entity = Ticket.builder()
+                .id(createTicketDTO.eventoId())
+                .preco(createTicketDTO.preco())
+                .build();
+
         Ticket ticketSaved = ticketRepository.save(entity);
         return ticketSaved.getId();
     }

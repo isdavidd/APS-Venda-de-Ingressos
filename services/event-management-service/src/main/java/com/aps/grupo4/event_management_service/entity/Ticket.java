@@ -1,13 +1,10 @@
 package com.aps.grupo4.event_management_service.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,7 +14,6 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Ticket {
 
     @Id
