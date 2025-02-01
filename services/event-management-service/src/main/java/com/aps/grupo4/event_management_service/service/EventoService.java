@@ -78,12 +78,6 @@ public class EventoService {
     @Transactional
     public Evento createEvento(EventoDTO eventoDTO) {
 
-        Optional<Evento> eventoJaExistente = eventoRepository.findByNomeEventoIgnoreCase(eventoDTO.getNomeEvento());
-
-        if (eventoJaExistente.isPresent()) {
-            throw new EventoInexistenteException(String.format("Já existe um evento com o nome %s ", eventoDTO.getNomeEvento()));
-        }
-
         if (eventoDTO.getEstadoOrUFEvento() == null) {
             throw new SiglaUFInvalidaException("Sigla UF/Nome estado é inválida(o)");
         }
@@ -133,12 +127,7 @@ public class EventoService {
                     log.info("Evento com o ID {} não encontrado. Nenhuma atualização foi feita.", eventoDTO.getIdEvento());
                     return new EventoInexistenteException(String.format("Evento com o ID %d não existe.", eventoDTO.getIdEvento()));
                 });
-
-        if (eventoDTO.getNomeEvento().equalsIgnoreCase(eventoExistente.getNomeEvento())) {
-            log.error("O novo nome do evento com ID {} já existe.", eventoDTO.getIdEvento());
-            throw new IllegalArgumentException(String.format("O novo nome do evento com ID %d já existia. Escolha outro.", eventoDTO.getIdEvento()));
-        }
-
+        
         if (eventoDTO.getDataEvento().isBefore(eventoExistente.getDataEvento())) {
             log.error("A nova data do evento com ID {} é inválida", eventoDTO.getIdEvento());
             throw new DataEventoInvalidaException(String.format("A nova data do evento com ID %d é inválida. Digite uma data válida.", eventoDTO.getIdEvento()));
