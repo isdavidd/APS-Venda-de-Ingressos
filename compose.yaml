@@ -46,7 +46,7 @@ services:
 
   service-tickets:
     build:
-      context: ./services/service-tickets 
+      context: ./services/ticket-service
     container_name: tickets-service
     ports:
       - "8081:8081" 

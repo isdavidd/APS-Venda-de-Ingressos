@@ -37,6 +37,13 @@ CREATE TABLE IF NOT EXISTS ingresso (
     FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
 );
 
+--CREATE TABLE notificacao (
+ --   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  --  id_usuario BIGINT NOT NULL,
+   -- mensagem TEXT NOT NULL,
+    --FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
+--);
+
 DELIMITER $$
 
 CREATE PROCEDURE ciar_indices()
