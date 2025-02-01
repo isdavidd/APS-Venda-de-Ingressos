@@ -11,14 +11,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
+    @Modifying
     void deleteByEventoId(Long idEvento);
 
     @Modifying
     @Query(value = """
-            DELETE FROM Ticket t
-            WHERE t.id_evento = :eventoId
-            AND t.id_usuario IS NULL
-            LIMIT :quantidadeRegistros;
+            DELETE FROM ingresso i
+            WHERE i.id_evento = :eventoId
+            AND i.id_usuario IS NULL
+            LIMIT :quantidadeRegistros
             """, nativeQuery = true)
-    Integer registrosAfetados(@Param("eventoId") Long eventoId, @Param("quantidadeRegistros") int quantidadeRegistros);
+    void registrosAfetados(@Param("eventoId") Long eventoId, @Param("quantidadeRegistros") int quantidadeRegistros);
 }

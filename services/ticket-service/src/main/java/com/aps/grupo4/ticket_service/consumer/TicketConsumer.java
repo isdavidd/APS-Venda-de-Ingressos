@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,22 +27,26 @@ public class TicketConsumer {
     }
 
 
-    @RabbitListener(queues = "evento_criado")
+    @RabbitListener(queues = "evento_criado", concurrency = "1-1")
+    @Transactional
     public void processarEventoCriado(byte[] message) {
         processarMensagemEventoCriado(message);
     }
 
-    @RabbitListener(queues = "capacidade_aumentada")
+    @RabbitListener(queues = "capacidade_aumentada", concurrency = "1-1")
+    @Transactional
     public void processarCapacidadeEventoAumentada(byte[] message) {
-        processarMensagemEventoAtualizado(message, true);
+        processarMensagemEventoCapacidadeAumentada(message);
     }
 
-    @RabbitListener(queues = "capacidade_reduzida")
+    @RabbitListener(queues = "capacidade_reduzida", concurrency = "1-1")
+    @Transactional
     public void processarCapacidadeEventoReduzida(byte[] message) {
-        processarMensagemEventoAtualizado(message, false);
+        processarMensagemEventoCapacidadeReduzida(message);
     }
 
-    @RabbitListener(queues = "evento_cancelado")
+    @RabbitListener(queues = "evento_cancelado", concurrency = "1-1")
+    @Transactional
     public void processarEventoCancelado(byte[] message) {
         processarMensagemEventoCancelado(message);
     }
@@ -55,9 +60,9 @@ public class TicketConsumer {
 
             for (int i = 0; i < queuedNewEventDTO.getCapacidadeEvento(); i++) {
                 ingressos.add(Ticket.builder()
-                                .id(queuedNewEventDTO.getId())
-                                .preco(queuedNewEventDTO.getValorIngressoEvento())
-                                .build()
+                        .eventoId(queuedNewEventDTO.getId())
+                        .preco(queuedNewEventDTO.getValorIngressoEvento())
+                        .build()
                 );
             }
 
@@ -72,31 +77,42 @@ public class TicketConsumer {
         }
     }
 
-    private void processarMensagemEventoAtualizado(byte[] message, boolean isCapacidadeAumentada) {
+    private void processarMensagemEventoCapacidadeAumentada(byte[] message) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             QueuedUpdatedEventDTO queuedUpdatedEventDTO = objectMapper.readValue(message, QueuedUpdatedEventDTO.class);
 
-            if (isCapacidadeAumentada) {
+            List<Ticket> ingressos = new ArrayList<>();
 
-                List<Ticket> ingressos = new ArrayList<>();
-
-                for (int i = 0; i < queuedUpdatedEventDTO.getCapacidadeEvento(); i++) {
-                    ingressos.add(Ticket.builder()
-                                    .id(queuedUpdatedEventDTO.getId())
-                                    .preco(queuedUpdatedEventDTO.getValorIngressoEvento())
-                                    .build()
-                    );
-                }
-
-                ticketRepository.saveAll(ingressos);
-                log.info("✅ Evento com ID {} aumentou sua capacidade. {} novos ingressos foram cirados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
+            for (int i = 0; i < queuedUpdatedEventDTO.getCapacidadeEvento(); i++) {
+                ingressos.add(Ticket.builder()
+                        .eventoId(queuedUpdatedEventDTO.getId())
+                        .preco(queuedUpdatedEventDTO.getValorIngressoEvento())
+                        .build()
+                );
             }
 
-            ticketRepository.registrosAfetados(queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
-            log.info("❌ Evento com ID {} diminuiu sua capacidade. {} ingressos foram apagados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
+            ticketRepository.saveAll(ingressos);
+            log.info("✅ Evento com ID {} aumentou sua capacidade. {} novos ingressos foram cirados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
 
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void processarMensagemEventoCapacidadeReduzida(byte[] message) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            QueuedUpdatedEventDTO queuedUpdatedEventDTO = objectMapper.readValue(message, QueuedUpdatedEventDTO.class);
+
+            ticketRepository.registrosAfetados(queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
+
+            log.info("❌ Evento com ID {} diminuiu sua capacidade. {} ingressos foram apagados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();

@@ -5,6 +5,7 @@ import com.aps.grupo4.ticket_service.controller.UpdateTicketDTO;
 import com.aps.grupo4.ticket_service.entity.Ticket;
 import com.aps.grupo4.ticket_service.repository.TicketRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,6 +19,7 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
     }
 
+    @Transactional
     public Long createTicket(CreateTicketDTO createTicketDTO) {
 
         var entity = Ticket.builder()
@@ -37,6 +39,7 @@ public class TicketService {
         return ticketRepository.findAll();
     }
 
+    @Transactional
     public Optional<Ticket> deleteById(Long id){
         Optional<Ticket> ticketExist = ticketRepository.findById(id);
         if(ticketExist.isPresent()) {
@@ -46,6 +49,7 @@ public class TicketService {
         return ticketExist;
     }
 
+    @Transactional
     public Optional<Ticket> updateById(Long ticketId, UpdateTicketDTO updateTicketDTO){
         var ticketEntity = getTicketById(ticketId);
 

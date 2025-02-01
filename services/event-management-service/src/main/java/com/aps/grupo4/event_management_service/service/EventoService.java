@@ -106,12 +106,9 @@ public class EventoService {
 
         eventoRepository.save(evento);
 
-        var eventoCriado = eventoRepository.findByNomeEventoIgnoreCase(eventoDTO.getNomeEvento());
-
-        eventoPublisher.publicarEventoCriado(eventoCriado.get());
+        eventoPublisher.publicarEventoCriado(evento);
 
         return evento;
-
     }
 
     @Transactional
