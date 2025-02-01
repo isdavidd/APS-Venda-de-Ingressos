@@ -59,6 +59,7 @@ services:
     networks:
       - aplicacao-venda-ingressos
     depends_on:
+      - service-events
       - mysql-aps2
       - rabbit-mq-aps2
 
