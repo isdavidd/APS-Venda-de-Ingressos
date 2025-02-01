@@ -127,7 +127,7 @@ public class EventoService {
                     log.info("Evento com o ID {} não encontrado. Nenhuma atualização foi feita.", eventoDTO.getIdEvento());
                     return new EventoInexistenteException(String.format("Evento com o ID %d não existe.", eventoDTO.getIdEvento()));
                 });
-        
+
         if (eventoDTO.getDataEvento().isBefore(eventoExistente.getDataEvento())) {
             log.error("A nova data do evento com ID {} é inválida", eventoDTO.getIdEvento());
             throw new DataEventoInvalidaException(String.format("A nova data do evento com ID %d é inválida. Digite uma data válida.", eventoDTO.getIdEvento()));

@@ -1,6 +1,6 @@
 version: '3.9'
 services:
-  mysql:
+  mysql-aps2:
     image: mysql:9.2
     container_name: mysql_aps2
     environment:
@@ -12,22 +12,37 @@ services:
       - ./mysql-scripts:/docker-entrypoint-initdb.d 
       - mysql_data:/var/lib/mysql 
     networks:
-      - springboot-network
+      - aplicacao-venda-ingressos
 
-  # service-events:
-  #   build:
-  #     context: ./services/event-management-service 
-  #   container_name: event-management-service
-  #   ports:
-  #     - "8081:8081" 
-  #   environment:
-  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/db_aps2
-  #     SPRING_DATASOURCE_USERNAME: root
-  #     SPRING_DATASOURCE_PASSWORD: 123456
-  #   networks:
-  #     - springboot-network
-  #   depends_on:
-  #     - mysql
+  rabbit-mq-aps2:
+    image: rabbitmq:management   
+    container_name: rabbit-mq_aps2
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - aplicacao-venda-ingressos
+
+  service-events:
+    build:
+      context: ./services/event-management-service 
+    container_name: event-management-service
+    ports:
+      - "8080:8080" 
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_RABBITMQ_HOST: rabbit-mq-aps2
+      SPRING_RABBITMQ_PORT: 5672
+    networks:
+      - aplicacao-venda-ingressos
+    depends_on:
+      - mysql
+      - rabbit-mq
 
   # service-tickets:
   #   build:
@@ -43,6 +58,7 @@ services:
   #     - springboot-network
   #   depends_on:
   #     - mysql
+  #     - rabbit-mq
 
   # frontend:
   #   build:
@@ -54,7 +70,7 @@ services:
   #     - springboot-network
 
 volumes:
-  mysql_data: # Volume para persistir os dados do banco de dados
+  mysql_data: 
 
 networks:
-  springboot-network: # Rede compartilhada para comunicação entre os serviços
+  saplicacao-venda-ingressos: 
