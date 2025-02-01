@@ -9,13 +9,13 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - ./mysql-scripts:/docker-entrypoint-initdb.d 
-      - mysql_data:/var/lib/mysql 
+      - ./mysql-scripts:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
     networks:
       - aplicacao-venda-ingressos
 
   rabbit-mq-aps2:
-    image: rabbitmq:management   
+    image: rabbitmq:management
     container_name: rabbit-mq_aps2
     ports:
       - "15672:15672"
@@ -28,10 +28,10 @@ services:
 
   service-events:
     build:
-      context: ./services/event-management-service 
+      context: ./services/event-management-service
     container_name: event-management-service
     ports:
-      - "8080:8080" 
+      - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
       SPRING_DATASOURCE_USERNAME: root
@@ -44,33 +44,26 @@ services:
       - mysql-aps2
       - rabbit-mq-aps2
 
-  # service-tickets:
-  #   build:
-  #     context: ./services/service-tickets # Caminho do serviço de ingressos
-  #   container_name: service-tickets
-  #   ports:
-  #     - "8082:8082" # Porta para acessar o serviço
-  #   environment:
-  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/event_management
-  #     SPRING_DATASOURCE_USERNAME: user
-  #     SPRING_DATASOURCE_PASSWORD: password
-  #   networks:
-  #     - springboot-network
-  #   depends_on:
-  #     - mysql-aps2
-  #     - rabbit-mq-aps2
-
-  # frontend:
-  #   build:
-  #     context: ./frontend # Caminho do projeto frontend
-  #   container_name: frontend
-  #   ports:
-  #     - "3000:3000" # Porta para acessar o frontend
-  #   networks:
-  #     - springboot-network
+  service-tickets:
+    build:
+      context: ./services/service-tickets 
+    container_name: tickets-service
+    ports:
+      - "8081:8081" 
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_RABBITMQ_HOST: rabbit-mq-aps2
+      SPRING_RABBITMQ_PORT: 5672
+    networks:
+      - aplicacao-venda-ingressos
+    depends_on:
+      - mysql-aps2
+      - rabbit-mq-aps2
 
 volumes:
-  mysql_data: 
+  mysql_data:
 
 networks:
-  aplicacao-venda-ingressos: 
+  aplicacao-venda-ingressos:
