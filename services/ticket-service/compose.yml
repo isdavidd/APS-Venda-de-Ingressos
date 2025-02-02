@@ -1,0 +1,19 @@
+services:
+  mysql:
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: db_aps2
+    container_name: mysql
+    image: mysql:9.2
+    volumes:
+      - mysql_volume:/var/lib/mysql
+    ports:
+      - 3307:3306
+    networks:
+      - mysql_network
+
+volumes:
+  mysql_volume:
+
+networks:
+  mysql_network:

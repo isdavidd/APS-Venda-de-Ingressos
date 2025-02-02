@@ -1,62 +1,100 @@
 version: '3.9'
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql-container
+  mysql-aps2:
+    image: mysql:9.2
+    container_name: mysql_aps2
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: event_management
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: db_aps2
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - ./mysql-scripts:/docker-entrypoint-initdb.d # Scripts para inicializar o banco
-      - mysql_data:/var/lib/mysql # Persistência de dados
+      - ./mysql-scripts:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
     networks:
-      - springboot-network
+      - aplicacao-venda-ingressos
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=123456"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  rabbit-mq-aps2:
+    image: rabbitmq:management
+    container_name: rabbit-mq_aps2
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - aplicacao-venda-ingressos
+    depends_on:
+      mysql-aps2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
   service-events:
     build:
-      context: ./services/service-events # Caminho do serviço de eventos
-    container_name: service-events
+      context: ./services/event-management-service
+    container_name: event-management-service
     ports:
-      - "8081:8081" # Porta para acessar o serviço
+      - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/event_management
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_RABBITMQ_HOST: rabbit-mq-aps2
+      SPRING_RABBITMQ_PORT: 5672
     networks:
-      - springboot-network
+      - aplicacao-venda-ingressos
     depends_on:
-      - mysql
+      rabbit-mq-aps2:
+        condition: service_healthy
+      mysql-aps2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u admin:teste123 -f http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
-  # service-tickets:
-  #   build:
-  #     context: ./services/service-tickets # Caminho do serviço de ingressos
-  #   container_name: service-tickets
-  #   ports:
-  #     - "8082:8082" # Porta para acessar o serviço
-  #   environment:
-  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/event_management
-  #     SPRING_DATASOURCE_USERNAME: user
-  #     SPRING_DATASOURCE_PASSWORD: password
-  #   networks:
-  #     - springboot-network
-  #   depends_on:
-  #     - mysql
-
-  # frontend:
-  #   build:
-  #     context: ./frontend # Caminho do projeto frontend
-  #   container_name: frontend
-  #   ports:
-  #     - "3000:3000" # Porta para acessar o frontend
-  #   networks:
-  #     - springboot-network
+  service-tickets:
+    build:
+      context: ./services/ticket-service
+    container_name: tickets-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_RABBITMQ_HOST: rabbit-mq-aps2
+      SPRING_RABBITMQ_PORT: 5672
+    networks:
+      - aplicacao-venda-ingressos
+    depends_on:
+      service-events:
+        condition: service_healthy
+      rabbit-mq-aps2:
+        condition: service_healthy
+      mysql-aps2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
 
 volumes:
-  mysql_data: # Volume para persistir os dados do banco de dados
+  mysql_data:
 
 networks:
-  springboot-network: # Rede compartilhada para comunicação entre os serviços
+  aplicacao-venda-ingressos:

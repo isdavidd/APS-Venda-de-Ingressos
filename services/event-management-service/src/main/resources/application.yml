@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: event-management-service
+
+  security:
+    basic:
+      enable: false
+
+  datasource:
+    url: jdbc:mysql://localhost:3308/db_aps_snapshot
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initialization-mode: always
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    format-sql: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+server:
+  port: 8080
+  servlet.context-path: /api
+
+logging:
+  level:
+    root: info
+#    org.hibernate.SQL: debug
+#    org.hibernate.type.descriptor.sql: trace
+#  file.name: logs/application.log
+#  file.path: logs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
