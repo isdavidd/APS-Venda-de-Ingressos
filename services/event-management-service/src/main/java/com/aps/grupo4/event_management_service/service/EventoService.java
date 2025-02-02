@@ -60,10 +60,20 @@ public class EventoService {
             String local,
             String nomeEvento
     ) {
+
+        UFEnum ufEvento = null;
+
+        if (siglaUF.length() == 2) {
+            ufEvento = UFEnum.valueOf(siglaUF.toUpperCase());
+
+        } else {
+            ufEvento = UFEnum.getUFFromEstado(siglaUF);
+        }
+
         var eventos = eventoRepository.buscarEventosPorParametros(
                 dataInicio,
                 dataFim,
-                siglaUF,
+                ufEvento,
                 capacidadeMinima,
                 capacidadeMaxima,
                 local,

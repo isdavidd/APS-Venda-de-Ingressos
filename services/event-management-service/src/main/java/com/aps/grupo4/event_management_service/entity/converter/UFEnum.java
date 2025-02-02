@@ -54,7 +54,7 @@ public enum UFEnum {
 
     public static UFEnum getUFFromEstado(String nomeEstado) {
         for (UFEnum uf : UFEnum.values()) {
-            if (StringUtils.stripAccents(uf.getEstado()).equalsIgnoreCase(nomeEstado)) {
+            if (StringUtils.stripAccents(uf.getEstado()).equalsIgnoreCase(StringUtils.stripAccents(nomeEstado))) {
                 return uf;
             }
         }
