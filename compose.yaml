@@ -39,21 +39,50 @@ services:
       retries: 5
       timeout: 5s
 
+  service-user:
+    build:
+      context: ./services/user-service
+    container_name: user-service
+    ports:
+      - "8084:8084"
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+
+    networks:
+      - aplicacao-venda-ingressos
+    depends_on:
+      mysql-aps2:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8084/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+
   service-events:
     build:
       context: ./services/event-management-service
     container_name: event-management-service
     ports:
       - "8080:8080"
+
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 123456
       SPRING_RABBITMQ_HOST: rabbit-mq-aps2
       SPRING_RABBITMQ_PORT: 5672
+
     networks:
       - aplicacao-venda-ingressos
     depends_on:
+      service-user:
+        condition: service_healthy
       rabbit-mq-aps2:
         condition: service_healthy
       mysql-aps2:
@@ -82,6 +111,8 @@ services:
     depends_on:
       service-events:
         condition: service_healthy
+      service-user:
+        condition: service_healthy  
       rabbit-mq-aps2:
         condition: service_healthy
       mysql-aps2:
