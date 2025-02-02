@@ -46,6 +46,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(configurer ->
                 configurer
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api-docs").permitAll()
                         .requestMatchers("/event-management/events/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/event-management/**").hasAuthority("ADMIN")

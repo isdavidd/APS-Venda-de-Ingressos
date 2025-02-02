@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api-dcos").permitAll()
                         .requestMatchers("/user-service/register").permitAll()
                         .requestMatchers("/user-service/user/cpf/{cpf}").hasAnyAuthority("USER", "ADMIN")
