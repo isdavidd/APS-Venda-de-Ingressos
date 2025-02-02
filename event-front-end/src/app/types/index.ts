@@ -7,6 +7,6 @@ export interface IEvent {
     valorIngressoEvento: string;
     capacidadeEvento: string;
     descricaoEvento: string;
-    banner: '/images/concert-banner.png';
-    avatar: '/images/avatar.png';
+    banner?: string;
+    avatar?: string;
 }
