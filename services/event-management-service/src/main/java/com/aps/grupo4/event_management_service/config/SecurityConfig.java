@@ -69,7 +69,7 @@ public class SecurityConfig {
 
 
         http.csrf(csrf -> csrf.disable());
-        http.cors(Customizer.withDefaults());
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.httpBasic(Customizer.withDefaults());
 
         return http.build();
