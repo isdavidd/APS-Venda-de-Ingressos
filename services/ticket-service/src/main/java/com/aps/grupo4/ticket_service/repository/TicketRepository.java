@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
@@ -22,4 +24,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             LIMIT :quantidadeRegistros
             """, nativeQuery = true)
     void registrosAfetados(@Param("eventoId") Long eventoId, @Param("quantidadeRegistros") int quantidadeRegistros);
+
+    @Query(value = "SELECT * FROM ingresso i WHERE i.id_usuario = :usuarioId", nativeQuery = true)
+    List<Ticket> findTicketsByUserId(@Param("usuarioId") Long usuarioId);
 }

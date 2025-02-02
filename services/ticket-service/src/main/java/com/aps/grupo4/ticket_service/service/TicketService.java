@@ -64,12 +64,18 @@ public class TicketService {
             if (updateTicketDTO.nomeComprador() != null)
                 ticket.setNomeComprador(updateTicketDTO.nomeComprador());
 
-
             if (updateTicketDTO.tipoIngresso() != null)
                 ticket.setTipoIngresso(updateTicketDTO.tipoIngresso());
+
+            if(updateTicketDTO.usuarioId() != null)
+                ticket.setUsuarioId(updateTicketDTO.usuarioId());
 
             return Optional.of(ticketRepository.save(ticket));
         }
         return Optional.empty();
+    }
+
+    public List<Ticket> getTicketsByUserId(Long userId){
+        return ticketRepository.findTicketsByUserId(userId);
     }
 }
