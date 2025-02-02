@@ -1,6 +1,6 @@
-package com.aps.grupo4.user_service.config.security;
+package com.aps.grupo4.event_management_service.config;
 
-import com.aps.grupo4.user_service.entity.Usuario;
+import com.aps.grupo4.event_management_service.entity.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
