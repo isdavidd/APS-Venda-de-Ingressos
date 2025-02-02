@@ -42,6 +42,7 @@ services:
   service-user:
     build:
       context: ./services/user-service
+      cache_from: []
     container_name: user-service
     ports:
       - "8084:8084"
@@ -67,6 +68,7 @@ services:
   service-events:
     build:
       context: ./services/event-management-service
+      cache_from: []
     container_name: event-management-service
     ports:
       - "8080:8080"
@@ -81,14 +83,12 @@ services:
     networks:
       - aplicacao-venda-ingressos
     depends_on:
-      service-user:
-        condition: service_healthy
       rabbit-mq-aps2:
         condition: service_healthy
       mysql-aps2:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -u admin:teste123 -f http://localhost:8080/api/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
       interval: 10s
       retries: 5
       start_period: 20s
@@ -97,6 +97,7 @@ services:
   service-tickets:
     build:
       context: ./services/ticket-service
+      cache_from: []
     container_name: tickets-service
     ports:
       - "8081:8081"
@@ -110,8 +111,6 @@ services:
       - aplicacao-venda-ingressos
     depends_on:
       service-events:
-        condition: service_healthy
-      service-user:
         condition: service_healthy  
       rabbit-mq-aps2:
         condition: service_healthy

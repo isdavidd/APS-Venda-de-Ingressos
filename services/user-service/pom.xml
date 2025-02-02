@@ -85,23 +85,9 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.12.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.5.0</version>
-		</dependency>
-
-
-		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.11.3</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -127,18 +113,6 @@
 				<version>3.1.0</version>
 				<executions>
 					<execution>
-<!--						<id>clean-logs-on-shutdown</id>-->
-<!--						<phase>post-integration-test</phase>-->
-<!--						<configuration>-->
-<!--							<tasks>-->
-<!--								<delete includeemptydirs="true">-->
-<!--									<fileset dir="logs"/>-->
-<!--								</delete>-->
-<!--							</tasks>-->
-<!--						</configuration>-->
-<!--						<goals>-->
-<!--							<goal>run</goal>-->
-<!--						</goals>-->
 					</execution>
 				</executions>
 			</plugin>
