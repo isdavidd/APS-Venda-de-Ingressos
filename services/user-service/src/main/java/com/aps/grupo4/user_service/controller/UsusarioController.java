@@ -1,11 +1,9 @@
 package com.aps.grupo4.user_service.controller;
 
 
-import com.aps.grupo4.user_service.entity.Usuario;
 import com.aps.grupo4.user_service.entity.dto.UsuarioDTO;
 import com.aps.grupo4.user_service.services.UsuarioService;
 import com.aps.grupo4.user_service.validation.UsuarioNaoEncontradoException;
-import com.aps.grupo4.user_service.validation.validator.CPF;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

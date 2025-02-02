@@ -1,7 +1,6 @@
 package com.aps.grupo4.user_service.entity.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import com.aps.grupo4.user_service.validation.validator.CPF;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -10,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.br.CPF;
 
 
 @Data

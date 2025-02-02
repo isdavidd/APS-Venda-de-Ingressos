@@ -17,11 +17,11 @@ CREATE TABLE IF NOT EXISTS evento (
 CREATE TABLE IF NOT EXISTS usuario (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE,
+    email VARCHAR(255) UNIQUE NOT NULL,
     telefone VARCHAR(20),
     cpf VARCHAR(14) UNIQUE NOT NULL,
 	senha VARCHAR(255) NOT NULL,
-	role TINYINT  NOT NULL
+	role TINYINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS ingresso (
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS pagamento (
 
 DELIMITER $$
 
-CREATE PROCEDURE ciar_indices()
+CREATE PROCEDURE criar_indices()
 BEGIN
     IF NOT EXISTS (
         SELECT 1
@@ -86,4 +86,4 @@ END$$
 
 DELIMITER ;
 
-CALL ciar_indices();
+CALL criar_indices();

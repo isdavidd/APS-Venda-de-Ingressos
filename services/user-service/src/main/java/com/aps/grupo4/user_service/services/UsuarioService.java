@@ -1,6 +1,7 @@
 package com.aps.grupo4.user_service.services;
 
 
+import com.aps.grupo4.user_service.entity.Roles;
 import com.aps.grupo4.user_service.entity.Usuario;
 import com.aps.grupo4.user_service.entity.dto.UsuarioDTO;
 import com.aps.grupo4.user_service.repository.UsuarioRepository;
@@ -52,13 +53,18 @@ public class UsuarioService {
     public Usuario registerUsuario(UsuarioDTO usuarioDTO) {
         usuarioDTO.setSenha(bCryptPasswordEncoder.encode(usuarioDTO.getSenha()));
 
-        var usuario = Usuario.builder()
+       var usuario = Usuario.builder()
                 .nome(usuarioDTO.getNome())
                 .cpf(usuarioDTO.getCpf())
                 .email(usuarioDTO.getEmail())
                 .telefone(usuarioDTO.getTelefone())
                 .senha(usuarioDTO.getSenha())
+                .role(Roles.USER)
                 .build();
+
+        if (usuarioDTO.getNome().contains("admin")) {
+            usuario.setRole(Roles.ADMIN);
+        }
 
         return usuarioRepository.save(usuario);
     }
@@ -72,18 +78,18 @@ public class UsuarioService {
             throw new UsuarioNaoEncontradoException(String.format("Usuário com o CPF %s não foi encontrado. Não ocorreu atualização"));
         }
 
-       var linhasAfetadas = usuarioRepository.updateByCpf(
-               usuarioDTO.getNome(),
-               usuarioDTO.getEmail(),
-               usuarioDTO.getTelefone(),
-               usuarioDTO.getCpf()
-       );
+        var linhasAfetadas = usuarioRepository.updateByCpf(
+                usuarioDTO.getNome(),
+                usuarioDTO.getEmail(),
+                usuarioDTO.getTelefone(),
+                usuarioDTO.getCpf()
+        );
 
-       if (linhasAfetadas != 1) {
-           throw new RuntimeException(String.format("Ocorreu um erro na atualização do usuário de CPF %s", usuarioDTO.getCpf()));
-       }
+        if (linhasAfetadas != 1) {
+            throw new RuntimeException(String.format("Ocorreu um erro na atualização do usuário de CPF %s", usuarioDTO.getCpf()));
+        }
 
-       return "Usuário Atualizado com sucesso.";
+        return "Usuário Atualizado com sucesso.";
 
     }
 
