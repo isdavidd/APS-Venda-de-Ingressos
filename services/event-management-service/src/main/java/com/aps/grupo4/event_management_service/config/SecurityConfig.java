@@ -31,7 +31,7 @@ import java.util.List;
 public class SecurityConfig {
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private  UserDetailsService userDetailsService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -60,6 +60,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable());
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.httpBasic(Customizer.withDefaults());
+
         http.authorizeHttpRequests(configurer ->
                 configurer
                         .requestMatchers("/event-management/events/**").hasAnyRole("USER", "ADMIN", "GESTOR")
@@ -68,16 +72,11 @@ public class SecurityConfig {
                         .authenticated()
         );
 
-
-        http.csrf(csrf -> csrf.disable());
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-        http.httpBasic(Customizer.withDefaults());
-
         return http.build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
