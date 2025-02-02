@@ -1,7 +1,5 @@
 import React from 'react';
 import NotificationItem, { Notification } from '../notification-item';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface NotificationModalProps {
     listNotifications: Notification[];
