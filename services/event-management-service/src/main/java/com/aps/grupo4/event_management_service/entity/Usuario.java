@@ -1,5 +1,6 @@
 package com.aps.grupo4.event_management_service.entity;
 
+import com.aps.grupo4.event_management_service.entity.converter.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +34,9 @@ public class Usuario {
 
     @Column(name = "senha", nullable = false)
     private String senha;
+
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    private Roles role;
 
 }

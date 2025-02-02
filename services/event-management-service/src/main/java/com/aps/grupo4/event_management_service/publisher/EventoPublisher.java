@@ -15,6 +15,7 @@ public class EventoPublisher {
 
     private static final String EXCHANGE_NAME = "evento_exchange";
 
+    //TODO Colocar essas kays no application.yml
     private static final String ROUTING_KEY_EVENTO_CRIADO = "evento.criado";
     private static final String ROUTING_KEY_CAPACIDADE_AUMENTADA = "evento.capacidade.aumentada";
     private static final String ROUTING_KEY_CAPACIDADE_REDUZIDA = "evento.capacidade.reduzida";

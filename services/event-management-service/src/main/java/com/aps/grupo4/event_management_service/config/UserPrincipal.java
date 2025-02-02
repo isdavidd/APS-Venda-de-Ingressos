@@ -23,7 +23,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+        return Collections.singleton(new SimpleGrantedAuthority(usuario.getRole().name()));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return usuario.getNome();
+        return usuario.getCpf();
     }
 
     public String getEmail() {

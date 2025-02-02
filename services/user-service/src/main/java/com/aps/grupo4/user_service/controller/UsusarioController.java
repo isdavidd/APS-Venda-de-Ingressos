@@ -33,14 +33,14 @@ public class UsusarioController {
             @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UsuarioDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Nenhum usuário encontrado")
+            @ApiResponse(responseCode = "204", description = "Nenhum usuário encontrado")
     })
     public ResponseEntity<Object> BuscaUsuarios() {
         try {
             var usuarios = usuarioService.getUsuarios();
 
             if (usuarios.isEmpty()) {
-                ResponseHandler.responseBuilder("Não há usuários", HttpStatus.NOT_FOUND, usuarios);
+                ResponseHandler.responseBuilder("Não há usuários", HttpStatus.NO_CONTENT, usuarios);
             }
 
             return ResponseEntity.ok().body(usuarios);

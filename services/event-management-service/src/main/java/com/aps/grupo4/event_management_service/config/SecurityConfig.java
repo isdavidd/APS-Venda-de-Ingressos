@@ -30,29 +30,12 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("usuario1")
-                .password(passwordEncoder().encode("teste123"))
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder().encode("teste123"))
-                .roles("ADMIN")
-                .build();
-
-        UserDetails gestorEventos = User.withUsername("gestor-eventos")
-                .password(passwordEncoder().encode("teste123"))
-                .roles("GESTOR")
-                .build();
-
-        return new InMemoryUserDetailsManager(user, admin, gestorEventos);
     }
 
     @Bean
@@ -63,8 +46,9 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers("/event-management/events/**").hasAnyRole("USER", "ADMIN", "GESTOR")
-                        .requestMatchers("/event-management/**").hasAnyRole("ADMIN", "GESTOR")
+                        .requestMatchers("/api-docs").permitAll()
+                        .requestMatchers("/event-management/events/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/event-management/**").hasAuthority("ADMIN")
                         .anyRequest()
                         .authenticated()
         );
@@ -73,7 +57,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
