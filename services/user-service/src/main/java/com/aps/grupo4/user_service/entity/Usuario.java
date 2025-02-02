@@ -32,4 +32,8 @@ public class Usuario {
 
     @Column(name = "senha", nullable = false)
     private String senha;
+
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    private Roles role;
 }

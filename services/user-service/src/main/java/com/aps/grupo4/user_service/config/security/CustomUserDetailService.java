@@ -17,11 +17,11 @@ public class CustomUserDetailService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String nomeUsuario) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByNome(nomeUsuario);
+    public UserDetails loadUserByUsername(String cpf) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByCpf(cpf);
 
         if (usuario == null) {
-            throw new UsuarioNaoEncontradoException(String.format("Usuário %s não encontrado", nomeUsuario));
+            throw new UsuarioNaoEncontradoException(String.format("Usuário com CPF %s não encontrado", cpf));
         }
 
         return new UserPrincipal(usuario);

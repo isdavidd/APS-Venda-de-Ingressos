@@ -12,6 +12,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     initialization-mode: always
 
+springdoc:
+  swagger-ui:
+    path: /api-docs
+
   jpa:
     hibernate:
       ddl-auto: update

@@ -37,8 +37,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("login").permitAll()
                         .requestMatchers("/register").permitAll()
+                        .requestMatchers("/user/{cpf}").hasRole("USER")
+                        .requestMatchers("/users", "/user/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
