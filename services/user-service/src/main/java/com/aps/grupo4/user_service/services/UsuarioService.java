@@ -71,6 +71,7 @@ public class UsuarioService {
 
     @Transactional
     public String updateUsuario(UsuarioDTO usuarioDTO) {
+        usuarioDTO.setSenha(bCryptPasswordEncoder.encode(usuarioDTO.getSenha()));
 
         var usuarioExistente = usuarioRepository.findByCpf(usuarioDTO.getCpf());
 
@@ -82,6 +83,7 @@ public class UsuarioService {
                 usuarioDTO.getNome(),
                 usuarioDTO.getEmail(),
                 usuarioDTO.getTelefone(),
+                usuarioDTO.getSenha(),
                 usuarioDTO.getCpf()
         );
 

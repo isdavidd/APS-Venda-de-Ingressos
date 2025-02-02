@@ -16,11 +16,16 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             UPDATE Usuario u
             SET u.nome = :nome,
             u.email = :email,
+            u.senha = :senha,
             u.telefone = :telefone
             WHERE u.cpf = :cpf
             """)
     @Modifying
-    int updateByCpf(@Param("nome") String nome, @Param("email") String email, @Param("telefone") String telefone, @Param("cpf") String cpf);
+    int updateByCpf(@Param("nome") String nome,
+                    @Param("email") String email,
+                    @Param("telefone") String telefone,
+                    @Param("senha") String senha,
+                    @Param("cpf") String cpf);
 
     int deleteByCpf(String cpf);
 }

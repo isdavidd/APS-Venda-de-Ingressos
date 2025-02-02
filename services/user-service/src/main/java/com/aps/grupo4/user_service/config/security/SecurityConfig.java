@@ -38,8 +38,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/user-service/register").permitAll()
-                        .requestMatchers("/user-service/user/{cpf}").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/user-service/**").hasRole("ADMIN")
+                        .requestMatchers("/user-service/user/cpf/{cpf}").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/user-service/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

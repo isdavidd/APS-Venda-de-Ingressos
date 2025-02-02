@@ -50,7 +50,7 @@ public class UsusarioController {
         }
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/id/{id}")
     @Operation(summary = "Buscar usuário por ID", description = "Retorna um usuário cadastrado a partir do seu ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuário encontrado",
@@ -74,7 +74,7 @@ public class UsusarioController {
         }
     }
 
-    @GetMapping("/user/{cpf}")
+    @GetMapping("/user/cpf/{cpf}")
     @Operation(summary = "Buscar usuário por CPF", description = "Retorna um usuário cadastrado a partir do seu CPF")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuário encontrado",
@@ -146,8 +146,10 @@ public class UsusarioController {
                                     value = """
                         {
                             "nome": "João da Silva",
+                            "cpf: "70542519704",
                             "email": "joao.silva@email.com",
                             "telefone": "11999999999",
+                            "senha": "ablubluble"
                         }
                         """)
                     )
