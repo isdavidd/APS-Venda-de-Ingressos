@@ -8,6 +8,12 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,10 +22,12 @@ import java.util.List;
 public class PaymentService {
     private PaymentRepository paymentRepository;
     private JavaMailSender mailSender;
+    private RestTemplate restTemplate;
 
-    public PaymentService(PaymentRepository paymentRepository, JavaMailSender mailSender) {
+    public PaymentService(PaymentRepository paymentRepository, JavaMailSender mailSender, RestTemplate restTemplate) {
         this.paymentRepository = paymentRepository;
         this.mailSender = mailSender;
+        this.restTemplate = restTemplate;
     }
 
     public Long createPayment(CreatePaymentDTO createPaymentDTO){
@@ -38,7 +46,25 @@ public class PaymentService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+        enviarNotificacaoCompra();
         return paymentSaved.getId();
+    }
+
+    private void enviarNotificacaoCompra() {
+        String url = "http://localhost:8082/notify";
+        String mensagem = "Seu ingresso foi comprado com sucesso!";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN); // Define o Content-Type correto
+
+        HttpEntity<String> entity = new HttpEntity<>(mensagem, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            System.out.println("Notificação de compra enviada com sucesso. Status: " + response.getStatusCode());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Payment> getPaymentsByUserId(Long userId){
