@@ -24,20 +24,28 @@ const Header = () => {
     ];
     return (
         <div className="bg-white p-4 z-10 flex fixed w-full">
-            <h1 className="text-3xl font-extrabold">Ingressos</h1>
+            <div className="cursor-pointer" onClick={() => router.push('/')}>
+                <h1 className="text-3xl text-[#212231] font-extrabold">
+                    Ingressos
+                </h1>
+            </div>
             <div className="flex items-center justify-end w-full">
                 <IconText
                     text="Crie seu evento"
                     icon={faPlusSquare}
-                    onClick={() => router.push('/create-event')}
+                    onClick={() => router.push('/newEvent')}
                 />
                 <IconText
                     text="Notificações"
                     icon={faBell}
                     onClick={() => setIsModalOpen(!isModalOpen)}
-                    className={isModalOpen ? 'bg-gray-200 font-bold rounded-md p-2' : ''}
+                    className={
+                        isModalOpen
+                            ? 'bg-gray-200 font-bold rounded-md p-2'
+                            : ''
+                    }
                 />
-                <IconText 
+                <IconText
                     text="Olá, visitante"
                     icon={faUser}
                     onClick={() => router.push('/user')}
@@ -46,7 +54,8 @@ const Header = () => {
             {isModalOpen && (
                 <NotificationModal
                     onClickClose={() => setIsModalOpen(false)}
-                    listNotifications={mockNotifications} />
+                    listNotifications={mockNotifications}
+                />
             )}
         </div>
     );

@@ -1,4 +1,4 @@
-export interface IEvent {
+export interface IEventDetail {
     id: string;
     nomeEvento: string;
     dataEvento: string;
@@ -9,4 +9,11 @@ export interface IEvent {
     descricaoEvento: string;
     banner?: string;
     avatar?: string;
+}
+export interface IEvent {
+    idEvento: string;
+    nomeEvento: string;
+    dataEvento: string;
+    estadoOrUFEvento: string;
+    localEvento: string;
 }

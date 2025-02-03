@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import { fetchFromAPI } from '../services/api';
 import { IEvent } from '../types';
 
-
-
 export function useEvents() {
     const [events, setEvents] = useState<IEvent[] | null>(null);
     const [loading, setLoading] = useState(true);

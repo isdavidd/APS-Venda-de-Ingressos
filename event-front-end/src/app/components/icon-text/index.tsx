@@ -11,7 +11,7 @@ interface IconTextProps {
 
 const IconText: FC<IconTextProps> = ({ icon, text, onClick, className }) => {
     return (
-        <button className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${className || ''}`}
+        <button className={`flex cursor-pointer items-center gap-2 px-3 py-2 rounded-md transition-colors ${className || ''}`}
                 onClick={onClick}>
             <FontAwesomeIcon icon={icon} className='h-6 w-6' />
             <span>{text}</span>
