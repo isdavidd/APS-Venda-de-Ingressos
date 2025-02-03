@@ -4,6 +4,7 @@ package com.aps.grupo4.event_management_service.service;
 import com.aps.grupo4.event_management_service.entity.Evento;
 import com.aps.grupo4.event_management_service.entity.converter.UFEnum;
 import com.aps.grupo4.event_management_service.entity.dtos.EventoDTO;
+import com.aps.grupo4.event_management_service.entity.dtos.ListagemEventoDTO;
 import com.aps.grupo4.event_management_service.publisher.EventoPublisher;
 import com.aps.grupo4.event_management_service.repository.EventoRepository;
 import com.aps.grupo4.event_management_service.repository.TicketRepository;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -30,7 +32,7 @@ public class EventoService {
     @Autowired
     private EventoPublisher eventoPublisher;
 
-    public List<Evento> getEventos() {
+    public List<ListagemEventoDTO> getEventos() {
 
         var eventos = eventoRepository.findAll();
 
@@ -39,7 +41,17 @@ public class EventoService {
             return List.of();
         }
 
-        return eventos;
+        var eventosDTO = eventos.stream()
+                .map(evento -> ListagemEventoDTO.builder()
+                        .idEvento(evento.getId())
+                        .nomeEvento(evento.getNomeEvento())
+                        .localEvento(evento.getLocalEvento())
+                        .dataEvento(evento.getDataEvento())
+                        .estadoOrUFEvento(evento.getUfEvento().name())
+                        .build()
+                ).toList();
+
+        return eventosDTO;
 
     }
 
