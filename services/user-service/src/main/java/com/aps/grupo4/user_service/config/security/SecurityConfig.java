@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api-dcos").permitAll()
+                        .requestMatchers("/auth").permitAll()
                         .requestMatchers("/user-service/register").permitAll()
                         .requestMatchers("/user-service/user/cpf/{cpf}").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/user-service/**").hasAuthority("ADMIN")
