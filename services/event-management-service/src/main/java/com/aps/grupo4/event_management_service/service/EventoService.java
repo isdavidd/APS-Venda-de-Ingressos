@@ -107,24 +107,27 @@ public class EventoService {
             throw new SiglaUFInvalidaException("Sigla UF/Nome estado é inválida(o)");
         }
 
-        UFEnum ufEvento = null;
-
-        if (eventoDTO.getEstadoOrUFEvento().length() == 2) {
-            ufEvento = UFEnum.valueOf(eventoDTO.getEstadoOrUFEvento().toUpperCase());
-
-        } else {
-            ufEvento = UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUFEvento());
-        }
 
         var evento = Evento.builder()
                 .nomeEvento(eventoDTO.getNomeEvento())
                 .dataEvento(eventoDTO.getDataEvento())
                 .localEvento(eventoDTO.getLocalEvento())
                 .valorIngressoEvento(eventoDTO.getValorIngressoEvento())
-                .ufEvento(ufEvento)
                 .descricaoEvento(eventoDTO.getDescricaoEvento())
                 .capacidadeEvento(eventoDTO.getCapacidadeEvento())
                 .build();
+
+        //TODO: Ajustar essa verificação má escrita
+
+        if (eventoDTO.getEstadoOrUFEvento().length() == 2 && UFEnum.isValidUF(eventoDTO.getEstadoOrUFEvento())) {
+            evento.setUfEvento(UFEnum.valueOf(eventoDTO.getEstadoOrUFEvento().toUpperCase()));
+
+        } else if (UFEnum.isValidEstado(eventoDTO.getEstadoOrUFEvento())) {
+            evento.setUfEvento(UFEnum.getUFFromEstado(eventoDTO.getEstadoOrUFEvento()));
+
+        } else {
+            throw new SiglaUFInvalidaException("Sigla UF/Nome estado é inválida(o)");
+        }
 
         eventoRepository.save(evento);
 
