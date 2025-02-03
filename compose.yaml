@@ -55,7 +55,7 @@ services:
     networks:
       - aplicacao-venda-ingressos
     depends_on:
-      mysql-aps2:
+      rabbit-mq-aps2:
         condition: service_healthy
 
     healthcheck:
@@ -83,9 +83,7 @@ services:
     networks:
       - aplicacao-venda-ingressos
     depends_on:
-      rabbit-mq-aps2:
-        condition: service_healthy
-      mysql-aps2:
+      service-user:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
@@ -112,16 +110,63 @@ services:
     depends_on:
       service-events:
         condition: service_healthy  
-      rabbit-mq-aps2:
-        condition: service_healthy
-      mysql-aps2:
-        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
       interval: 10s
       retries: 5
       start_period: 20s
       timeout: 5s
+      
+  service-notification:
+    build:
+      context: ./services/notification-service
+      cache_from: []
+    container_name: notifications-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_RABBITMQ_HOST: rabbit-mq-aps2
+      SPRING_RABBITMQ_PORT: 5672
+    networks:
+      - aplicacao-venda-ingressos
+    depends_on:
+      service-tickets:
+        condition: service_healthy  
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+      
+  service-payment:
+    build:
+      context: ./services/payment-service
+      cache_from: []
+    container_name: payments-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-aps2:3306/db_aps2
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_RABBITMQ_HOST: rabbit-mq-aps2
+      SPRING_RABBITMQ_PORT: 5672
+    networks:
+      - aplicacao-venda-ingressos
+    depends_on:
+      service-notification:
+        condition: service_healthy  
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+      
 
 volumes:
   mysql_data:
