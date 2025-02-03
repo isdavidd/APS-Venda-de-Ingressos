@@ -8,6 +8,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
@@ -31,14 +32,14 @@ public class PaymentService {
     }
 
     public Long createPayment(CreatePaymentDTO createPaymentDTO){
-        var entity = Payment.builder()
-                .id(createPaymentDTO.getId())
-                .usuarioId(createPaymentDTO.getUsuarioId())
-                .valor(createPaymentDTO.getValor())
-                .metodoPagamento(createPaymentDTO.getMetodoPagamento())
-                .emailEnviado(createPaymentDTO.getEmailEnviado())
-                .dataPagamento(createPaymentDTO.getDataPagamento())
-                .build();
+        var entity = new Payment(
+                createPaymentDTO.getId(),
+                createPaymentDTO.getUsuarioId(),
+                createPaymentDTO.getValor(),
+                createPaymentDTO.getMetodoPagamento(),
+                createPaymentDTO.getEmailEnviado(),
+                createPaymentDTO.getDataPagamento()
+        );
 
         Payment paymentSaved = paymentRepository.save(entity);
         try {
@@ -62,7 +63,10 @@ public class PaymentService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             System.out.println("Notificação de compra enviada com sucesso. Status: " + response.getStatusCode());
-        } catch (Exception e) {
+        } catch (ResourceAccessException e) {
+            System.out.println("Serviço de notificação indisponível. Notificação não enviada. " + e.getMessage());
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }

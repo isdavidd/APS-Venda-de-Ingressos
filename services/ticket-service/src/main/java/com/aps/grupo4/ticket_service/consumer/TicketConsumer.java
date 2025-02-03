@@ -94,7 +94,7 @@ public class TicketConsumer {
             }
 
             ticketRepository.saveAll(ingressos);
-            log.info("✅ Evento com ID {} aumentou sua capacidade. {} novos ingressos foram cirados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
+            log.info("✅ Evento com ID {} aumentou sua capacidade. {} novos ingressos foram criados", queuedUpdatedEventDTO.getId(), queuedUpdatedEventDTO.getDiferencaCapacidade());
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();

@@ -46,6 +46,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(configurer ->
                 configurer
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api-docs").permitAll()
                         .requestMatchers("/tickets-service/ticket/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/tickets-service/**").hasAuthority("ADMIN")
