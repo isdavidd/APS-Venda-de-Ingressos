@@ -14,7 +14,7 @@ public class CreatePaymentDTO {
     private Long usuarioId;
     private BigDecimal valor;
     private String metodoPagamento;
-    private Boolean emailEnviado;
+    private Boolean emailEnviado = false;
     private LocalDateTime dataPagamento;
 
     public Long getId() {

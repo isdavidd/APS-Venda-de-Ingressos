@@ -1,6 +1,7 @@
 package com.aps.grupo4.payment_service.service;
 
 import com.aps.grupo4.payment_service.controller.dtos.CreatePaymentDTO;
+import com.aps.grupo4.payment_service.controller.dtos.UserDTO;
 import com.aps.grupo4.payment_service.entity.Payment;
 import com.aps.grupo4.payment_service.repository.PaymentRepository;
 import jakarta.mail.MessagingException;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaymentService {
@@ -43,7 +45,8 @@ public class PaymentService {
 
         Payment paymentSaved = paymentRepository.save(entity);
         try {
-            sendPaymentConfirmationEmail("danielpedro7676@gmail.com", entity.getValor());
+            enviarEmailConfirmacaoDeCompra(entity.getValor(), entity.getUsuarioId());
+            atualizarStatusEmail(entity);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -51,8 +54,17 @@ public class PaymentService {
         return paymentSaved.getId();
     }
 
+    private void atualizarStatusEmail(Payment entity){
+        Optional<Payment> paymentTemp = paymentRepository.findById(entity.getId());
+        if(paymentTemp.isPresent()){
+            var payment = paymentTemp.get();
+            payment.setEmailEnviado(true);
+            paymentRepository.save(payment);
+        }
+    }
+
     private void enviarNotificacaoCompra() {
-        String url = "http://localhost:8082/notify";
+        String url = "http://notifications-service:8082/notify";
         String mensagem = "Seu ingresso foi comprado com sucesso!";
 
         HttpHeaders headers = new HttpHeaders();
@@ -75,7 +87,7 @@ public class PaymentService {
         return paymentRepository.findPaymentsByUsuarioId(userId);
     }
 
-    public void sendPaymentConfirmationEmail(String email, BigDecimal valor) throws MessagingException {
+    public void enviarEmailConfirmacaoDeCompra(BigDecimal valor, Long getUsuarioId) throws MessagingException {
 
         MimeMessage mail = mailSender.createMimeMessage();
         MimeMessageHelper helper = null;
@@ -86,10 +98,20 @@ public class PaymentService {
             throw new RuntimeException(e);
         }
 
+        String email = BuscarEmailUsuario(getUsuarioId);
+
         helper.setTo(email);
         helper.setSubject("Confirmação de Pagamento");
         helper.setText(mensagem, true); // "true" indica que pode ser HTML
 
         mailSender.send(mail);
+
+        System.out.print("E-mail enviado com sucesso para " + email + ".");
+    }
+
+    public String BuscarEmailUsuario(Long usuarioId){
+        String url = "http://user-service:8084/user-service/user/id/" + usuarioId;
+        var temp = restTemplate.getForObject(url, UserDTO.class);
+        return temp.getEmail();
     }
 }
