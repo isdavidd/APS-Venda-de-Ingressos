@@ -75,12 +75,19 @@ public class EventoService {
 
         UFEnum ufEvento = null;
 
-        if (siglaUF.length() == 2) {
-            ufEvento = UFEnum.valueOf(siglaUF.toUpperCase());
+        try {
+            if (siglaUF != null && siglaUF.length() == 2) {
+                ufEvento = UFEnum.valueOf(siglaUF.toUpperCase());
 
-        } else {
-            ufEvento = UFEnum.getUFFromEstado(siglaUF);
+            } else if (siglaUF != null) {
+                ufEvento = UFEnum.getUFFromEstado(siglaUF);
+            }
+
+        } catch (IllegalArgumentException e) {
+            log.error("Erro ao tentar mapear sigla de UF: {}", siglaUF, e);
+            ufEvento = null;
         }
+
 
         var eventos = eventoRepository.buscarEventosPorParametros(
                 dataInicio,
