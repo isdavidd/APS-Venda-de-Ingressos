@@ -1,6 +1,7 @@
 package com.aps.grupo4.user_service.controller;
 
 import com.aps.grupo4.user_service.entity.dto.UsuarioLoginRequest;
+import com.aps.grupo4.user_service.entity.dto.UsuarioLoginResponse;
 import com.aps.grupo4.user_service.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
@@ -17,17 +18,23 @@ public class AuthController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<String> generateBasicToken(@RequestBody UsuarioLoginRequest request) {
+    public ResponseEntity<Object> generateBasicToken(@RequestBody UsuarioLoginRequest request) {
 
         var usuario = usuarioService.getUsuarioPorCpf(request.getCpf());
 
         if (usuario == null) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(403)).build();
+            return ResponseEntity.status(HttpStatusCode.valueOf(404)).build();
         }
 
         String auth = request.getCpf() + ":" + request.getSenha();
         String basicToken = "Basic " + Base64.getEncoder().encodeToString(auth.getBytes());
 
-        return ResponseEntity.ok(basicToken);
+        UsuarioLoginResponse usuarioLoginResponse = new UsuarioLoginResponse();
+        usuarioLoginResponse.setNome(usuario.getNome());
+        usuarioLoginResponse.setEmail(usuario.getEmail());
+        usuarioLoginResponse.setToken(basicToken);
+        usuarioLoginResponse.setRole(usuario.getRole().name());
+
+        return ResponseEntity.ok(usuarioLoginResponse);
     }
 }
