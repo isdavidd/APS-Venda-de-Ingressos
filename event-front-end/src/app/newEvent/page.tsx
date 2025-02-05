@@ -90,12 +90,12 @@ const NewEvent = () => {
                         <input
                             id="ticketPrice"
                             type="number"
+                            min="0"
                             {...register('ticketPrice', {
                                 required: 'Valor do ingresso é obrigatório',
                                 pattern: {
-                                    value: /^\d+(\.\d{1,2})?$/,
-                                    message:
-                                        'Digite um valor válido (ex: 10.50)',
+                                    value: /^(?:0|[1-9]\d*)(\.\d{1,2})?$/,
+                                        message: 'Digite um valor válido (ex: 10.50)',
                                 },
                                 valueAsNumber: true,
                             })}
