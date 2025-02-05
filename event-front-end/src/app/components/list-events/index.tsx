@@ -9,7 +9,7 @@ export default function ListEvents() {
     const router = useRouter();
     const { events, loading, error } = useEvents();
     const { update } = useStore();
-    console.log(events);
+
 
     if (loading) return <p>Carregando eventos...</p>;
     if (error) return <p>Erro ao carregar eventos: {error}</p>;

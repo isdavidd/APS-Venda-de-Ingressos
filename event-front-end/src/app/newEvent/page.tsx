@@ -1,6 +1,8 @@
 'use client';
 import { base_url } from '@/src/services/api';
 import { useForm } from 'react-hook-form';
+import { getAuthToken } from '@/src/services/api';
+import { useRouter } from 'next/navigation';
 
 interface EventFormData {
     eventName: string;
@@ -14,24 +16,35 @@ interface EventFormData {
 
 const NewEvent = () => {
     const headers = new Headers();
-    headers.set('Content-Type', 'text/json');
-    headers.set('Authorization', 'Basic ' + 'MTk2MDcxMTI3MDk6dGVzdGUxMjM=');
+
+    const router = useRouter();
+    headers.set('Content-Type', 'application/json');
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<EventFormData>();
 
+
     const onSubmit = async (data: EventFormData) => {
         const payload = {
             nomeEvento: data.eventName,
-            dataEvento: data.date,
+            dataEvento: data.date + "T00:00",
             estadoOrUFEvento: data.uf,
             localEvento: data.location,
             valorIngressoEvento: data.ticketPrice,
             capacidadeEvento: data.maxTickets,
             descricaoEvento: data.description,
         };
+
+        try {
+            const authToken = await getAuthToken();
+            console.log(authToken);
+            headers.set('Authorization', authToken);
+        } catch (error) {
+            console.error("Erro ao buscar token de autenticação:", error);
+            throw error;
+        }
 
         try {
             const response = await fetch(`${base_url}/create-event`, {
@@ -44,8 +57,11 @@ const NewEvent = () => {
                 throw new Error('Falha na requisição');
             }
 
+            window.alert("Evento criado com sucesso!");
+
             const data = await response.json();
             console.log('Resposta:', data);
+            router.push('/');
         } catch (error) {
             console.error('Erro ao enviar o formulário:', error);
         }
@@ -95,7 +111,7 @@ const NewEvent = () => {
                                 required: 'Valor do ingresso é obrigatório',
                                 pattern: {
                                     value: /^(?:0|[1-9]\d*)(\.\d{1,2})?$/,
-                                        message: 'Digite um valor válido (ex: 10.50)',
+                                    message: 'Digite um valor válido (ex: 10.50)',
                                 },
                                 valueAsNumber: true,
                             })}

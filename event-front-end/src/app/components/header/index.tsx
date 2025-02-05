@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     faBell,
     faPlusSquare,
@@ -13,6 +13,7 @@ import { Notification } from '../notification-item';
 const Header = () => {
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [nome, setNome] = useState<string | null>(null);
     const mockNotifications: Array<Notification> = [
         { id: 1, title: 'Evento 1', description: 'Evento 1' },
         { id: 2, title: 'Evento 2', description: 'Evento 2' },
@@ -22,6 +23,15 @@ const Header = () => {
         { id: 6, title: 'Evento 6', description: 'Evento 6' },
         { id: 7, title: 'Evento 7', description: 'Evento 7' },
     ];
+
+    useEffect(() => {
+        // Buscar dados do usuário no localStorage
+        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
+        if (userData.nome) {
+            setNome(userData.nome);
+        }
+    }, []);
     return (
         <div className="bg-white p-4 z-10 flex fixed w-full">
             <div className="cursor-pointer" onClick={() => router.push('/')}>
@@ -46,7 +56,7 @@ const Header = () => {
                     }
                 />
                 <IconText
-                    text="Olá, visitante"
+                    text={`Olá, ${nome ? nome : "visitante"}`}
                     icon={faUser}
                     onClick={() => router.push('/user')}
                 />

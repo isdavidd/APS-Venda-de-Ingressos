@@ -16,9 +16,9 @@ export default function AuthPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     let formattedValue = value;
-    
+
     if (name === "telefone") {
       formattedValue = formatPhone(value);
       setTelefoneError(formattedValue.replace(/\D/g, "").length === 11 || formattedValue === "" ? "" : "Telefone inválido");
@@ -27,7 +27,7 @@ export default function AuthPage() {
     } else if (name === "nome") {
       formattedValue = formatNome(value);
     }
-    
+
     setFormData({ ...formData, [name]: formattedValue });
   };
 
@@ -75,6 +75,67 @@ export default function AuthPage() {
     }
     setEmailError("");
     console.log(isLogin ? "Logando..." : "Cadastrando...", formData);
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isLogin) {
+      if (!validateEmail(formData.email)) {
+        setEmailError("Por favor, insira um endereço de email válido.");
+        return;
+      }
+
+      if (formData.telefone.replace(/\D/g, "").length !== 11) {
+        setTelefoneError("Telefone inválido");
+        return;
+      }
+
+      if (nomeError) {
+        return;
+      }
+    }
+
+    setEmailError("");
+    setTelefoneError("");
+    console.log(isLogin)
+    const url = isLogin ? "http://localhost:8084/user-service/login" : "http://localhost:8084/user-service/register";
+    const payload = isLogin
+      ? { cpf: formData.cpf, senha: formData.senha }
+      : { ...formData, telefone: formData.telefone.replace(/\D/g, "") };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao ${isLogin ? "logar" : "cadastrar"}`);
+      }
+
+      const data = await response.json();
+      console.log("Resposta do servidor:", data);
+
+      const userData = { ...data, senhaOriginal: formData.senha };
+
+      localStorage.setItem("userData", JSON.stringify(userData));
+
+      // Aqui você pode redirecionar o usuário ou mostrar uma mensagem de sucesso
+      if (isLogin) {
+        console.log("Login bem-sucedido!");
+        // Redirecionar para a página de dashboard ou home
+      } else {
+        console.log("Cadastro bem-sucedido!");
+        setIsLogin(true); // Alternar para a tela de login após o cadastro
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      // Aqui você pode mostrar uma mensagem de erro para o usuário
+    }
   };
 
   return (
@@ -149,6 +210,7 @@ export default function AuthPage() {
           <button
             type="submit"
             className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-900 transition"
+            onClick={handleRegister}
           >
             {isLogin ? "Entrar" : "Cadastrar"}
           </button>
