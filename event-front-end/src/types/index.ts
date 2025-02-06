@@ -26,6 +26,7 @@ export interface IUser {
     role: 'USER' | 'ADMIN';
     token: string;
     senhaOriginal: string
+    cpf: string;
 }
 
 export interface INotification {

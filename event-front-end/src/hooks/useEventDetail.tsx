@@ -16,7 +16,7 @@ export function useEventDetail({ id }: EventDetailProps) {
         async function getEventDetail() {
             try {
                 const data = await fetchFromAPI<IEventDetail>(
-                    `/events/id-evento/${id}`,
+                    `/event/id-evento/${id}`,
                 );
                 setEventDetail(data);
             } catch (err) {

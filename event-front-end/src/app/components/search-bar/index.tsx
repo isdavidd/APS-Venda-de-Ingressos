@@ -1,10 +1,11 @@
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
-import { getAuthToken } from "@/src/services/api";
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
+import { useStore } from '../../store/useStore';
 
-const SearchBar = ({ setEvents }: { setEvents: (events: any[]) => void }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+const SearchBar = () => {
+    const { userData, update } = useStore();
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchEvents = async () => {
         if (!searchTerm.trim()) return; // Evita buscas vazias
@@ -13,30 +14,32 @@ const SearchBar = ({ setEvents }: { setEvents: (events: any[]) => void }) => {
 
         try {
             try {
-                const authToken = await getAuthToken();
+                const authToken = userData?.token ?? '';
                 headers.set('Authorization', authToken);
             } catch (error) {
-                console.error("Erro ao buscar token de autenticação:", error);
+                console.error('Erro ao buscar token de autenticação:', error);
                 throw error;
             }
 
             const response = await fetch(
-                `http://localhost:8080/event-management/events/buscar?nome=${encodeURIComponent(searchTerm)}`,
+                `http://localhost:8080/event-management/event/buscar?nomeEvento=${encodeURIComponent(
+                    searchTerm,
+                )}`,
                 {
                     method: 'GET',
                     headers: headers,
-                }
+                },
             );
 
-
             if (!response.ok) {
-                throw new Error("Erro ao buscar eventos");
+                throw new Error('Erro ao buscar eventos');
             }
 
             const data = await response.json();
-            setEvents(data); // Atualiza o estado com os eventos retornados
+            console.log(data);
+            update('events', data);
         } catch (error) {
-            console.error("Erro ao buscar eventos:", error);
+            console.error('Erro ao buscar eventos:', error);
         }
     };
 
@@ -53,7 +56,10 @@ const SearchBar = ({ setEvents }: { setEvents: (events: any[]) => void }) => {
                 onClick={fetchEvents}
                 className="flex bg-gray-900 p-2 rounded-full hover:bg-gray-800 h-10 w-11 justify-center items-center"
             >
-                <FontAwesomeIcon icon={faSearch} className="text-white h-5 w-5" />
+                <FontAwesomeIcon
+                    icon={faSearch}
+                    className="text-white h-5 w-5"
+                />
             </button>
         </div>
     );

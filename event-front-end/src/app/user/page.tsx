@@ -92,7 +92,6 @@ export default function AuthPage() {
             return;
         }
         setEmailError('');
-        console.log(isLogin ? 'Logando...' : 'Cadastrando...', formData);
     };
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -141,7 +140,6 @@ export default function AuthPage() {
             }
 
             const data = await response.json();
-            console.log('Resposta do servidor:', data);
 
             const userData = {
                 nome: data?.nome,
@@ -155,8 +153,8 @@ export default function AuthPage() {
 
             // Aqui você pode redirecionar o usuário ou mostrar uma mensagem de sucesso
             if (isLogin) {
-                router.push('/');
                 console.log('Login bem-sucedido!');
+                router.push('/');
                 // Redirecionar para a página de dashboard ou home
             } else {
                 console.log('Cadastro bem-sucedido!');

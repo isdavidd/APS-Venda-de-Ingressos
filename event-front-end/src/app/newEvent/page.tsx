@@ -1,8 +1,8 @@
 'use client';
 import { base_url } from '@/src/services/api';
 import { useForm } from 'react-hook-form';
-import { getAuthToken } from '@/src/services/api';
 import { useRouter } from 'next/navigation';
+import { useStore } from '../store/useStore';
 
 interface EventFormData {
     eventName: string;
@@ -11,11 +11,13 @@ interface EventFormData {
     description: string;
     uf: string;
     date: string;
+    hora: string;
     maxTickets: number;
 }
 
 const NewEvent = () => {
     const headers = new Headers();
+    const { userData } = useStore();
 
     const router = useRouter();
     headers.set('Content-Type', 'application/json');
@@ -25,11 +27,10 @@ const NewEvent = () => {
         formState: { errors },
     } = useForm<EventFormData>();
 
-
     const onSubmit = async (data: EventFormData) => {
         const payload = {
             nomeEvento: data.eventName,
-            dataEvento: data.date + "T00:00",
+            dataEvento: `${data.date}T${data.hora}`,
             estadoOrUFEvento: data.uf,
             localEvento: data.location,
             valorIngressoEvento: data.ticketPrice,
@@ -38,11 +39,10 @@ const NewEvent = () => {
         };
 
         try {
-            const authToken = await getAuthToken();
-            console.log(authToken);
+            const authToken = userData?.token ?? '';
             headers.set('Authorization', authToken);
         } catch (error) {
-            console.error("Erro ao buscar token de autenticação:", error);
+            console.error('Erro ao buscar token de autenticação:', error);
             throw error;
         }
 
@@ -57,14 +57,23 @@ const NewEvent = () => {
                 throw new Error('Falha na requisição');
             }
 
-            window.alert("Evento criado com sucesso!");
+            window.alert('Evento criado com sucesso!');
 
-            const data = await response.json();
-            console.log('Resposta:', data);
             router.push('/');
         } catch (error) {
             console.error('Erro ao enviar o formulário:', error);
         }
+    };
+
+    const validateDate = (value: string) => {
+        const selectedDate = new Date(value);
+        const currentDate = new Date();
+        const diffTime = selectedDate.getTime() - currentDate.getTime();
+        const diffDays = diffTime / (1000 * 3600 * 24);
+        return (
+            diffDays >= 7 ||
+            'A data do evento deve ser pelo menos 7 dias no futuro'
+        );
     };
 
     return (
@@ -111,7 +120,8 @@ const NewEvent = () => {
                                 required: 'Valor do ingresso é obrigatório',
                                 pattern: {
                                     value: /^(?:0|[1-9]\d*)(\.\d{1,2})?$/,
-                                    message: 'Digite um valor válido (ex: 10.50)',
+                                    message:
+                                        'Digite um valor válido (ex: 10.50)',
                                 },
                                 valueAsNumber: true,
                             })}
@@ -199,12 +209,35 @@ const NewEvent = () => {
                             type="date"
                             {...register('date', {
                                 required: 'Data é obrigatória',
+                                validate: validateDate,
                             })}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         />
                         {errors.date && (
                             <span className="text-red-500 text-sm">
                                 {errors.date.message}
+                            </span>
+                        )}
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="hora"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Hora
+                        </label>
+                        <input
+                            id="hora"
+                            type="time"
+                            {...register('hora', {
+                                required: 'Hora é obrigatória',
+                            })}
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        {errors.hora && (
+                            <span className="text-red-500 text-sm">
+                                {errors.hora.message}
                             </span>
                         )}
                     </div>

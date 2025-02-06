@@ -6,6 +6,9 @@ interface State {
     event: IEvent | undefined;
     update: <K>(key: string, value: K) => void;
     userData: IUser | undefined;
+    events: IEvent[] | undefined;
+    isLoadingList: boolean;
+    isErrorList: boolean;
 }
 
 const loadStateFromLocalStorage = () => {
@@ -19,8 +22,11 @@ export const useStore = create<State>((set) => {
     return {
         isOpenModalNotifications:
             initialState.isOpenModalNotifications || false,
-        event: initialState.event || null,
+        event: initialState.event || undefined,
+        events: initialState.events || undefined,
         userData: initialState.userData || undefined,
+        isLoadingList: initialState.isLoadingList || false,
+        isErrorList: initialState.isErrorList || false,
 
         update: (key, value) =>
             set((state) => {
