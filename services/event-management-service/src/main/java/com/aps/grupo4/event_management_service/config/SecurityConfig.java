@@ -42,7 +42,7 @@ public class SecurityConfig {
                 configurer
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api-docs").permitAll()
-                        .requestMatchers("/event-management/events", "/event-management/event/").permitAll()
+                        .requestMatchers("/event-management/events", "/event-management/event/**").permitAll()
                         .requestMatchers("/event-management/**").hasAuthority("ADMIN")
                         .anyRequest()
                         .authenticated()
