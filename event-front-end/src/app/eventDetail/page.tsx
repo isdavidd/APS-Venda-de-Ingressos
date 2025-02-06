@@ -3,6 +3,7 @@ import { useStore } from '@/src/app/store/useStore';
 import { useEventDetail } from '../../hooks/useEventDetail';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { formatDate } from '@/src/utils/format';
 
 export default function EventDetail() {
     const { event } = useStore();
@@ -27,7 +28,7 @@ export default function EventDetail() {
                     {eventDetail?.nomeEvento}
                 </h1>
                 <p className="text-gray-600">
-                    {eventDetail?.dataEvento} | {eventDetail?.localEvento} -{' '}
+                    {formatDate(eventDetail?.dataEvento) ?? "--/--"} | {eventDetail?.localEvento} -{' '}
                     {eventDetail?.ufEvento}
                 </p>
             </div>
