@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Controller
@@ -23,11 +24,21 @@ public class NotificationController {
     }
 
     @PostMapping("/notify")
-    public ResponseEntity<Void> notify(@RequestBody String message) {
-        System.out.println("Mensagem recebida: " + message);
-        for (Sinks.Many<String> sink : sinks) {
-            sink.tryEmitNext(message); // Emite a mensagem para todos os sinks
+    public ResponseEntity<NotificationDTO> notify(@RequestBody NotificationDTO notification) {
+        if (notification.getId() == null || notification.getId().isEmpty()) {
+            notification.setId(UUID.randomUUID().toString());
         }
-        return ResponseEntity.ok().build();
+
+        String notificationJson = String.format(
+                "{\"id\":\"%s\",\"titulo\":\"%s\",\"descricao\":\"%s\"}",
+                notification.getId(), notification.getTitulo(), notification.getDescricao()
+        );
+
+        System.out.println("Mensagem recebida: " + notificationJson);
+
+        for (Sinks.Many<String> sink : sinks) {
+            sink.tryEmitNext(notificationJson);
+        }
+        return ResponseEntity.ok(notification);
     }
 }
