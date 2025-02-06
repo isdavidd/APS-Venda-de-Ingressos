@@ -1,9 +1,17 @@
 package com.aps.grupo4.user_service.entity.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+
+@Schema(description = "Objeto para representar as informações retornadas ao autenticar um usuário")
 public class UsuarioLoginResponse {
+    @Schema(example = "nome legal")
     private String nome;
+    @Schema(example = "teste@gmail.com")
     private String email;
+    @Schema(example = "ADMIN")
     private String role;
+    @Schema(example = "Basic MTk2MDcxMTI3MDk6dGVzdGUxMjM=")
     private String token;
 
     public String getNome() { return nome; }

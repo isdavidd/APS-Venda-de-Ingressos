@@ -16,6 +16,7 @@ import org.hibernate.validator.constraints.br.CPF;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(description = "DTO para transferir informações de um usuário")
 public class UsuarioDTO {
 
     @Schema(example = "João da Silva")

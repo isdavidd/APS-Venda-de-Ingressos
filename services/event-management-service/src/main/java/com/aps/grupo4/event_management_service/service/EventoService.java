@@ -88,7 +88,6 @@ public class EventoService {
             ufEvento = null;
         }
 
-
         var eventos = eventoRepository.buscarEventosPorParametros(
                 dataInicio,
                 dataFim,

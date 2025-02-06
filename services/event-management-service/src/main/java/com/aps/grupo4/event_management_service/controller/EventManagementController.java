@@ -1,7 +1,6 @@
 package com.aps.grupo4.event_management_service.controller;
 
 
-import com.aps.grupo4.event_management_service.utils.exceptions.EventoExistenteException;
 import com.aps.grupo4.event_management_service.utils.exceptions.EventoInexistenteException;
 import com.aps.grupo4.event_management_service.utils.exceptions.SiglaUFInvalidaException;
 import com.aps.grupo4.event_management_service.entity.dtos.EventoDTO;
@@ -51,7 +50,7 @@ public class EventManagementController {
     }
 
 
-    @GetMapping(path = "/events/id-evento/{id}")
+    @GetMapping(path = "/event/id-evento/{id}")
     @Operation(summary = "Buscar evento por ID", description = "Retorna um evento com base no ID fornecido")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Evento encontrado"),
@@ -72,7 +71,7 @@ public class EventManagementController {
         }
     }
 
-    @GetMapping(path = "/events/buscar")
+    @GetMapping(path = "/event/buscar")
     @Operation(summary = "Buscar eventos por parâmetros", description = "Retorna uma lista de eventos com base nos parâmetros fornecidos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Eventos encontrados"),
