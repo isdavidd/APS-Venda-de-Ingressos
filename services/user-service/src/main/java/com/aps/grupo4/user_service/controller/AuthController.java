@@ -65,7 +65,9 @@ public class AuthController {
 
         UsuarioLoginResponse usuarioLoginResponse = new UsuarioLoginResponse();
         usuarioLoginResponse.setNome(usuario.getNome());
+        usuarioLoginResponse.setCpf(usuario.getCpf());
         usuarioLoginResponse.setEmail(usuario.getEmail());
+        usuarioLoginResponse.setTelefone(usuario.getTelefone());
         usuarioLoginResponse.setToken(basicToken);
         usuarioLoginResponse.setRole(usuario.getRole().name());
 
