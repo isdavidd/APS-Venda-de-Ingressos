@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import { IEvent } from '../../types';
+import { IEvent, IUser } from '../../types';
 
 interface State {
     isOpenModalNotifications: boolean;
     event: IEvent | undefined;
     update: <K>(key: string, value: K) => void;
+    userData: IUser | undefined;
 }
 
 const loadStateFromLocalStorage = () => {
@@ -19,6 +20,7 @@ export const useStore = create<State>((set) => {
         isOpenModalNotifications:
             initialState.isOpenModalNotifications || false,
         event: initialState.event || null,
+        userData: initialState.userData || undefined,
 
         update: (key, value) =>
             set((state) => {

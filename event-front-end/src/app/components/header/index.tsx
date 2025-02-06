@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     faBell,
     faPlusSquare,
@@ -7,14 +7,15 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import IconText from '../icon-text';
 import { useRouter } from 'next/navigation';
+import { useStore } from '../../store/useStore';
 import NotificationModal from '../notifications';
-import { Notification } from '../notification-item';
+import { INotification } from '@/src/types';
 
 const Header = () => {
     const router = useRouter();
+    const { userData } = useStore();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [nome, setNome] = useState<string | null>(null);
-    const mockNotifications: Array<Notification> = [
+    const mockNotifications: Array<INotification> = [
         { id: 1, title: 'Evento 1', description: 'Evento 1' },
         { id: 2, title: 'Evento 2', description: 'Evento 2' },
         { id: 3, title: 'Evento 3', description: 'Evento 3' },
@@ -24,14 +25,6 @@ const Header = () => {
         { id: 7, title: 'Evento 7', description: 'Evento 7' },
     ];
 
-    useEffect(() => {
-        // Buscar dados do usuário no localStorage
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-
-        if (userData.nome) {
-            setNome(userData.nome);
-        }
-    }, []);
     return (
         <div className="bg-white p-4 z-10 flex fixed w-full">
             <div className="cursor-pointer" onClick={() => router.push('/')}>
@@ -56,7 +49,7 @@ const Header = () => {
                     }
                 />
                 <IconText
-                    text={`Olá, ${nome ? nome : "visitante"}`}
+                    text={`Olá, ${userData?.nome ? userData?.nome : 'visitante'}`}
                     icon={faUser}
                     onClick={() => router.push('/user')}
                 />

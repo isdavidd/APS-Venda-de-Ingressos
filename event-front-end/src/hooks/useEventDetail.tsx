@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { fetchFromAPI } from '../services/api';
-import { IEvent } from '../types';
+import { IEventDetail } from '../types';
 
 interface EventDetailProps {
     id: string | undefined;
@@ -10,12 +10,12 @@ interface EventDetailProps {
 export function useEventDetail({ id }: EventDetailProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [eventDetail, setEventDetail] = useState<IEvent | null>(null);
+    const [eventDetail, setEventDetail] = useState<IEventDetail | null>(null);
 
     useEffect(() => {
         async function getEventDetail() {
             try {
-                const data = await fetchFromAPI<IEvent>(
+                const data = await fetchFromAPI<IEventDetail>(
                     `/events/id-evento/${id}`,
                 );
                 setEventDetail(data);

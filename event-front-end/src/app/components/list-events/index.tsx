@@ -4,15 +4,35 @@ import { useEvents } from '../../../hooks/useEvents';
 import { IEvent } from '../../../types';
 import EventItem from '../event-item';
 import { useStore } from '@/src/app/store/useStore';
+import Loading from '../loading-component';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 export default function ListEvents() {
     const router = useRouter();
     const { events, loading, error } = useEvents();
     const { update } = useStore();
 
-
-    if (loading) return <p>Carregando eventos...</p>;
-    if (error) return <p>Erro ao carregar eventos: {error}</p>;
+    if (loading) {
+        return (
+            <div className="p-24">
+                <Loading />
+            </div>
+        );
+    }
+    if (error)
+        return (
+            <div className="flex items-center justify-center space-x-2 p-24">
+                <FontAwesomeIcon
+                    icon={faExclamationTriangle}
+                    className="text-red-500"
+                    size="lg"
+                />
+                <p>
+                    Erro ao carregar eventos: {error}
+                </p>
+            </div>
+        );
 
     return (
         <main>

@@ -4,7 +4,7 @@ export interface IEventDetail {
     dataEvento: string;
     ufEvento: string;
     localEvento: string;
-    valorIngressoEvento: string;
+    valorIngressoEvento: number;
     capacidadeEvento: string;
     descricaoEvento: string;
     banner?: string;
@@ -16,4 +16,20 @@ export interface IEvent {
     dataEvento: string;
     estadoOrUFEvento: string;
     localEvento: string;
+    banner?: string;
+    avatar?: string;
+}
+
+export interface IUser {
+    nome: string;
+    email: string;
+    role: 'USER' | 'ADMIN';
+    token: string;
+    senhaOriginal: string
+}
+
+export interface INotification {
+    title: string;
+    id: number;
+    description: string;
 }

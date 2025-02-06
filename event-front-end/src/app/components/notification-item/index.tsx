@@ -1,15 +1,10 @@
+import { INotification } from '@/src/types';
 import { faCircleInfo, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 
-export interface Notification {
-    title: string;
-    id: number;
-    description: string;
-}
-
 interface NotificationItemProps {
-    item: Notification;
+    item: INotification;
 }
 
 const NotificationItem = ({ item }: NotificationItemProps) => {
